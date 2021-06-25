@@ -1,12 +1,19 @@
 # Small Talk Generator
-
 ## Project Description
-
-- Eliminate the ackwardness at the beginning of meeting with a global team, but being up-to-date on what's trending locally, regionally, nationally, etc. 
-- Suggestive topics of conversation when you are starting a meeting.
-
+Have you every found the beginning of a meeting to be awkward and silent? No More! With the Small Talk Generator get access to all the things happening around the world where your team is located. Want to talk about the weekend? Look at the weather and events for you and your team all in one place. Small Talk Generator will present to you a dashboard of widgets tailored to topics you and your team find interesting. Pull it up at the beginning of a meeting and take a break from "Zoom Fatigue"!
 ## User Story
 
+>**AS A(N)** team member<br>
+I **WANT** a dashboard to display suggestive topics of conversation<br>
+**SO THAT** I feel less awkward at the beginning of a video call
+
+>**AS A(N)** team member<br>
+I **WANT** to filter the suggestive topics<br>
+**SO THAT** I only see topics that I am comfortable talking about
+
+>**AS A(N)** team member<br>
+I **WANT** get data from a variety of APIs<br>
+**SO THAT** I have access to a number of different topics
 - Business news
 - Twitter
 - Instagram
@@ -19,22 +26,22 @@
 - Food
 - Politics
 
->As a user<br>
-I want a dashboard to display suggestive topics of conversation
-so that I feel less awkward at the begginning of a video call.
-
-Being able to filter on things that you like more.
-
-As an [user], I want to [...], so that [...]
 
 ## Wireframe or Sketch of the design
-
-[!Image link]
-
+![Wireframe of App](./assets/images/initial_wireframe.png)
 ## APIS to be used
-
-This should include CSS Framework, 3rd Party APIs, and Server-Side APIS if known - Update as more information becomes available
-
+The below list of APIs are ones we are thinking might be helpful to create suggestive topics:
+- [News API](https://www.programmableweb.com/api/news)
+- [Washington Post](https://www.programmableweb.com/api/washington-post-trove-rest-api)
+- [Twitter](https://www.programmableweb.com/api/twitter)
+- [Social Media](https://www.programmableweb.com/api/hashedtags)
+- [Eventbrite](https://www.programmableweb.com/api/eventbrite)
+- [Weather](https://openweathermap.org/api/one-call-api)
+- [Reddit](https://www.reddit.com/dev/api)
+- [Sports](https://sportradar.us/sports-data/)
+- [Bitcoin](https://bitcoincharts.com/about/markets-api/)
+- [Politics](https://www.programmableweb.com/category/politics/api)
+- [Restaurants]()
 ## Rough breakdown of tasks
 
-[GITHUB PROJECT BOARD]() <- Feel free to just add a link to the github project board here
+[Small Talk Kanban Board](https://github.com/avidrunner87/small-talk/projects/2)
