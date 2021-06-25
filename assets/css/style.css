@@ -1,0 +1,19 @@
+/* Formatting for the overall web page */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* Formatting for the header */
+
+
+
+/* Formatting for the main content */
+
+
+
+/* Formatting for changes in screen size */
+@media only screen and (max-width: 575px) {
+
+}
