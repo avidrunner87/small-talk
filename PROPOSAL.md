@@ -26,6 +26,18 @@ I **WANT** get data from a variety of APIs<br>
 - Food
 - Politics
 
+>**AS A(N)** team member<br>
+I **WANT** to be able to view multiple cities at the same time<br>
+**SO THAT** I can quickly scan through everything without extra clicks
+
+>**AS A(N)** team member<br>
+I **WANT** store previous searches<br>
+**SO THAT** I don't have to restart every time I open the app
+
+>**AS A(N)** team member<br>
+I **WANT** delete previous searches<br>
+**SO THAT** I can clean up my dashboard of non-relevant data
+
 
 ## Wireframe or Sketch of the design
 ![Wireframe of App](./assets/images/initial_wireframe.png)
@@ -41,7 +53,9 @@ The below list of APIs are ones we are thinking might be helpful to create sugge
 - [Sports](https://sportradar.us/sports-data/)
 - [Bitcoin](https://bitcoincharts.com/about/markets-api/)
 - [Politics](https://www.programmableweb.com/category/politics/api)
-- [Restaurants]()
+- [Restaurants](https://english.api.rakuten.net/ptwebsolution/api/worldwide-restaurants)
+
+_Research still needs to be done to ensure these are accessible without any CORS issues._
 ## Rough breakdown of tasks
 
 [Small Talk Kanban Board](https://github.com/avidrunner87/small-talk/projects/2)
