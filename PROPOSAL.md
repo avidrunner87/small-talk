@@ -1,6 +1,7 @@
 # Small Talk Generator
 ## Project Description
-Have you every found the beginning of a meeting to be awkward and silent? No More! With the Small Talk Generator get access to all the things happening around the world where your team is located. Want to talk about the weekend? Look at the weather and events for you and your team all in one place. Small Talk Generator will present to you a dashboard of widgets tailored to topics you and your team find interesting. Pull it up at the beginning of a meeting and take a break from "Zoom Fatigue"!
+Have you ever found the beginning of a meeting to be awkward and silent? No More! With the Small Talk Generator, get access to everything happening around the world where your team is located. Want to talk about the weekend? Look at the weather and events for you and your team all in one place. Small Talk Generator will present a dashboard of widgets tailored to topics you and your team find interesting. So pull it up at the beginning of a meeting and take a break from "Zoom Fatigue"!
+
 ## User Story
 
 >**AS A(N)** team member<br>
