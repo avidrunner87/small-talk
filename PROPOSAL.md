@@ -1,17 +1,29 @@
-# [PROJECT TITLE] _change this line_
-
-- [[PROJECT TITLE] _change this line_](#project-title-change-this-line)
-  - [Project Description](#project-description)
-  - [User Story](#user-story)
-  - [Wireframe or Sketch of the design](#wireframe-or-sketch-of-the-design)
-  - [APIS to be used](#apis-to-be-used)
-  - [Rough breakdown of tasks](#rough-breakdown-of-tasks)
+# Small Talk Generator
 
 ## Project Description
 
-Add a paragraph describing your project here
+- Eliminate the ackwardness at the beginning of meeting with a global team, but being up-to-date on what's trending locally, regionally, nationally, etc. 
+- Suggestive topics of conversation when you are starting a meeting.
 
 ## User Story
+
+- Business news
+- Twitter
+- Instagram
+- Sports
+- Weather
+- Time / Time Zone
+- Music / Groups
+- Events
+- Books
+- Food
+- Politics
+
+>As a user<br>
+I want a dashboard to display suggestive topics of conversation
+so that I feel less awkward at the begginning of a video call.
+
+Being able to filter on things that you like more.
 
 As an [user], I want to [...], so that [...]
 
