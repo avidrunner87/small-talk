@@ -36,3 +36,4 @@ You can access the website [here]().
 [W3 Schools](https://www.w3schools.com/)<br>
 [jQuery](https://jquery.com)<br>
 [jQueryUI](https://jqueryui.com)
+[Header Background Image](https://vcwnewrivermtrogers.com/resources/work-talk-header-1400x350/)
