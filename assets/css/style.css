@@ -33,7 +33,7 @@ main {
 }
 
 /* Formatting for the footer */
-.footer-copyright {
+footer {
   padding: 10px;
   background-color: #BE2A59;
   color: #ffffff;
