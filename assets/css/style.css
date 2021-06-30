@@ -32,6 +32,13 @@ main {
   bottom: 14px;
 }
 
+h3 {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  writing-mode: vertical-lr;
+  padding: 10px;
+}
+
 /* Formatting for the footer */
 footer {
   padding: 10px;
