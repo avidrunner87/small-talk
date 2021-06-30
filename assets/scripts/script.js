@@ -6,6 +6,7 @@ let autocomplete;
 function init() {
     renderHeader();
     renderMainContent();
+    renderFooter();
     $('.sidenav').sidenav();
     $('.fixed-action-btn').floatingActionButton();
     searchInputAutoComplete();
@@ -43,10 +44,8 @@ function renderMainContent() {
     // Append location search button to main container
     $(".container").append($btnLocationSearch);
 
-    // Build the footer
-    let $footerDiv = $("<div>");
-    $footerDiv.text("Made by Triple A");
-    $("footer").append($footerDiv);
+    // Build cards for locations
+    buildLocationCards();
 }
 
 function buildLocationSearch() {
@@ -123,22 +122,68 @@ function searchInputAutoComplete() {
     });
 }
 
+function buildLocationCards() {
+    $(".locationCard").remove();
+    let locationItems = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
+    if (locationItems === null) {
+        locationItems = [];
+    }
+
+    for (let i = 0; i < locationItems.length; i++) {
+        // Build the location card Div
+        let $locationCardDiv = $("<div>");
+        $locationCardDiv.addClass("card horizontal");
+
+        // Build the location card Title
+        let $locationCardTitle = $("<div>");
+        $locationCardTitle.addClass("card-title");
+        let $locationCardTitleH3 = $("<h3>");
+        $locationCardTitleH3.text(locationItems[i].cityName);
+
+        // Append the location card title to card Div
+        $locationCardTitle.append($locationCardTitleH3);
+        $locationCardDiv.append($locationCardTitle);
+
+        // Build the location card content
+        let $locationCardStack = $("<div>");
+        $locationCardStack.addClass("card-stacked");
+
+        let $locationCardContent = $("<div>");
+        $locationCardContent.attr("id", `Card-${locationItems[i].cityId}`);
+        $locationCardContent.addClass("card-content");
+
+        // Append the location card content to card Div 
+        $locationCardStack.append($locationCardContent);
+        $locationCardDiv.append($locationCardStack);
+
+        // Append the location card to the container
+        $(".container").append($locationCardDiv);
+    }
+}
+
+function renderFooter() {
+    // Build the footer
+    let $footerDiv = $("<div>");
+    $footerDiv.text("Made by Triple A");
+    $("footer").append($footerDiv);
+}
+
 // Create the Search history
 function renderSearchLocations() {
     $(".searchResult").remove();
     // Get the list of search history items from local storage
-    let searchItems = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
-    if (searchItems === null) {
-        searchItems = [];
+    let locationItems = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
+    if (locationItems === null) {
+        locationItems = [];
     }
 
     // TODO: User Story #4 -> Sort Locations
-    // searchItems.sort(function(a, b) {
+    // locationItems.sort(function(a, b) {
     //     return a.cityName - b.cityName
     // });
 
 
-    for (let i = 0; i < searchItems.length; i++) {
+    for (let i = 0; i < locationItems.length; i++) {
         let $searchResult = $("<li>");
         $searchResult.addClass("searchResult");
 
@@ -146,12 +191,12 @@ function renderSearchLocations() {
         $searchResultA.addClass("subheader");
 
         let $searchResultRemove = $("<i>");
-        $searchResultRemove.attr("id", searchItems[i].cityId);
+        $searchResultRemove.attr("id", locationItems[i].cityId);
         $searchResultRemove.addClass("small material-icons");
         $searchResultRemove.text("delete");
 
         $searchResultA.append($searchResultRemove);
-        $searchResultA.append(searchItems[i].cityName);
+        $searchResultA.append(locationItems[i].cityName);
         $searchResult.append($searchResultA);
 
         $("#locationSlideOut").append($searchResult);
@@ -165,9 +210,9 @@ init();
 //Store the new location in local storage once found via google
 document.querySelector("#addButton").addEventListener("click", function(event) {
     // Get search history items from local storage
-    let searchItems = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
-    if (searchItems === null) {
-        searchItems = [];
+    let locationItems = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
+    if (locationItems === null) {
+        locationItems = [];
     }
     
     // Set the new entry for the array
@@ -183,24 +228,24 @@ document.querySelector("#addButton").addEventListener("click", function(event) {
     }
 
     // Check if an item already exists in the array and either add new or delete and add
-    let validateCity = searchItems.filter(city =>(city.cityId === cityId));
+    let validateCity = locationItems.filter(city =>(city.cityId === cityId));
 
     console.log(validateCity);
 
-    let cityIndex = searchItems.findIndex(city => city.cityId === cityId);
+    let cityIndex = locationItems.findIndex(city => city.cityId === cityId);
     if (validateCity.length === 0 && newEntry.cityId.length > 0) {
         // Does not exist in array so add
         console.log("Does not exist. Added.");
-        searchItems.push(newEntry);
+        locationItems.push(newEntry);
     } else if (newEntry.cityId.length > 0 && cityIndex != -1) {
         // Does exist in the array so delete and add
         console.log("Does exist. Replaced.");
-        searchItems.splice(cityIndex, 1);
-        searchItems.push(newEntry);
+        locationItems.splice(cityIndex, 1);
+        locationItems.push(newEntry);
     }
     
     // Store changes back to local storage
-    localStorage.setItem("smallTalk_searchLocations", JSON.stringify(searchItems));
+    localStorage.setItem("smallTalk_searchLocations", JSON.stringify(locationItems));
 
     // TODO: User Story #1 -> Location Form Reset
 
