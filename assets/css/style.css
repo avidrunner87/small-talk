@@ -24,6 +24,10 @@ main {
   flex: 1 0 auto;
 }
 
+#addLocations, #filterWidgets {
+  margin: 10px;
+}
+
 #sideNavigation {
   font-size: 30px;
 }
