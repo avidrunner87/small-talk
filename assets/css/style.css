@@ -43,6 +43,12 @@ h3 {
   padding: 10px;
 }
 
+span.badge {
+  float: unset;
+  margin-left: 5px;
+  border-radius: 9999em;
+}
+
 /* Formatting for the footer */
 footer {
   padding: 10px;
