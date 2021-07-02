@@ -11,14 +11,34 @@ function init() {
     renderFooter();
     $('.sidenav').sidenav();
     $('.fixed-action-btn').floatingActionButton();
+    $('.modal').modal();
     searchInputAutoComplete();
     renderSearchLocations();
 
-    // Activate widgets
+
+    // Activate Widget / Cards
     weatherWidget(true);
-    
-    // Activate widget slide-out
+
+    // LAST: Activate Widget Filter
     renderFilterWidgets();
+}
+
+// Reload the widgets due to a page change
+function renderAllWidgets() {
+    if (registeredWidgets === null) {
+        registeredWidgets = [];
+    }
+
+    registeredWidgets.forEach(widget => {
+        switch (widget.widgetConsName) {
+            case "Weather":
+                weatherWidget();
+                break;
+        
+            default:
+                break;
+        }
+    });
 }
 
 // Create the header
@@ -176,22 +196,22 @@ function searchInputAutoComplete() {
 
 function buildLocationCards() {
     $(".locationCard").remove();
-    let locationItems = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
-    if (locationItems === null) {
-        locationItems = [];
+    let locations = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
+    if (locations === null) {
+        locations = [];
     }
 
-    for (let i = 0; i < locationItems.length; i++) {
+    for (let i = 0; i < locations.length; i++) {
         // Build the location card Div
         let $locationCardDiv = $("<div>");
         $locationCardDiv.addClass("card horizontal locationCard");
-        $locationCardDiv.attr("cityId", `${locationItems[i].cityId}`);
+        $locationCardDiv.attr("cityId", `${locations[i].cityId}`);
 
         // Build the location card Title
         let $locationCardTitle = $("<div>");
         $locationCardTitle.addClass("card-title");
         let $locationCardTitleH3 = $("<h3>");
-        $locationCardTitleH3.text(locationItems[i].cityShortName);
+        $locationCardTitleH3.text(locations[i].cityShortName);
 
         // Append the location card title to card Div
         $locationCardTitle.append($locationCardTitleH3);
@@ -202,7 +222,7 @@ function buildLocationCards() {
         $locationCardStack.addClass("card-stacked");
 
         let $locationCardContent = $("<div>");
-        $locationCardContent.attr("id", `Content-${locationItems[i].cityId}`);
+        $locationCardContent.attr("id", `Content-${locations[i].cityId}`);
         $locationCardContent.addClass("card-content");
 
         // Append the location card content to card Div 
@@ -212,6 +232,9 @@ function buildLocationCards() {
         // Append the location card to the container
         $(".container").append($locationCardDiv);
     }
+
+    // Refresh the widgets
+    renderAllWidgets()
 }
 
 function renderFooter() {
@@ -225,30 +248,30 @@ function renderFooter() {
 function renderSearchLocations() {
     $(".searchResult").remove();
     // Get the list of search history items from local storage
-    let locationItems = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
-    if (locationItems === null) {
-        locationItems = [];
+    let locations = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
+    if (locations === null) {
+        locations = [];
     }
 
     // TODO: User Story #4 -> Sort Locations
-    // locationItems.sort(function(a, b) {
+    // locations.sort(function(a, b) {
     //     return a.cityName - b.cityName
     // });
 
 
-    for (let i = 0; i < locationItems.length; i++) {
+    for (let i = 0; i < locations.length; i++) {
         let $searchResult = $("<li>");
         $searchResult.addClass("searchResult");
 
         let $searchResultA = $("<a>");
 
         let $searchResultRemove = $("<i>");
-        $searchResultRemove.attr("id", locationItems[i].cityId);
+        $searchResultRemove.attr("id", locations[i].cityId);
         $searchResultRemove.addClass("small material-icons");
         $searchResultRemove.text("delete");
 
         $searchResultA.append($searchResultRemove);
-        $searchResultA.append(locationItems[i].cityName);
+        $searchResultA.append(locations[i].cityName);
         $searchResult.append($searchResultA);
 
         $("#locationSlideOut").append($searchResult);
@@ -308,45 +331,108 @@ init();
 // ------------ Widget Functions -------------
 // Create Weather Widget
 function weatherWidget(onInit) {
-    // Set widget name -> Letters and Numbers Only
+    // UPDATE: Set widget name -> Letters and Numbers Only
     const widgetName = "Weather";
     const widgetConsName = widgetName.replace(/ /g,'');
 
-    // Register widget on initial page load
     if (onInit) {
-        let widgetItem = {
-            "widgetName": widgetName,
-            "widgetConsName": widgetConsName
+        // Register widget if it isn't already 
+        let validateRegisteredWidget = registeredWidgets.filter(widget => (widget.widgetConsName === widgetConsName));
+        if (validateRegisteredWidget.length === 0) {
+            let widgetItem = {
+                "widgetName": widgetName,
+                "widgetConsName": widgetConsName
+            }
+            registeredWidgets.push(widgetItem);
         }
-        registeredWidgets.push(widgetItem);
-    }
-
-    // Get active filter widgets items from local storage
-    let activeWidgets = JSON.parse(localStorage.getItem("smallTalk_activeWidgets"));
-    if (activeWidgets === null) {
-        activeWidgets = [];
-    }
-
-    // Check if an item already exists in the array to determine whether to show widget
-    let validateWidget = activeWidgets.filter(widget => (widget.widgetConsName === widgetConsName));
-
-    if (validateWidget.length !== 0) {
-
-
     } else {
-        // Disabled in user settings and needs to be removed.
-        $(".weatherWidgetCard").remove();
-    }
+        // Get active filter widgets items from local storage
+        let activeWidgets = JSON.parse(localStorage.getItem("smallTalk_activeWidgets"));
+        if (activeWidgets === null) {
+            activeWidgets = [];
+        }
 
+        // Check if an item exists in the array to determine whether to show widget
+        let validateActiveWidget = activeWidgets.filter(widget => (widget.widgetConsName === widgetConsName));
+
+        if (validateActiveWidget.length !== 0) {
+
+            // Clear out existing widgets
+            $(".weatherWidgetCard").remove();
+
+            let locations = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
+            if (locations === null) {
+                locations = [];
+            }
+
+            locations.forEach(location => {
+
+                let $widgetDivRow = $("<div>");
+                $widgetDivRow.addClass("row weatherWidgetCard");
+
+                let $widgetDivCol = $("<div>");
+                $widgetDivCol.addClass("col s12 m4");
+
+                let $widgetDivCard = $("<div>");
+                $widgetDivCard.addClass("card teal lighten-1");
+
+                let $widgetDivContent = $("<div>");
+                $widgetDivContent.addClass("card-content white-text");
+
+                let $widgetDivTitle = $("<span>");
+                $widgetDivTitle.addClass("card-title");
+                $widgetDivTitle.text("Today's Weather");
+                $widgetDivContent.append($widgetDivTitle);
+
+
+                // Get API Content
+                let requestUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${location.cityLAT}&lon=${location.cityLNG}&units=imperial&exclude=minutely,hourly,alerts,current&appid=33e00170884c3cd4fa86aa23f7431b3e`
+
+                fetch(requestUrl)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (data) {
+                    // Build the weather image next for the forecast
+                    let $resultsForcWXImg = $("<img>");
+                    let forcImgSrc = `http://openweathermap.org/img/wn/${data.daily[0].weather[0].icon}@2x.png`;
+                    $resultsForcWXImg.attr("src", forcImgSrc);
+                    $resultsForcWXImg.attr("title", data.daily[0].weather[0].description);
+                    $resultsForcWXImg.attr("alt", data.daily[0].weather[0].description);
+                    $widgetDivContent.append($resultsForcWXImg);
+                });
+
+                let $widgetDivAction = $("<div>");
+                $widgetDivAction.addClass("card-action");
+
+                let $widgetDivActionA = $("<a>");
+                $widgetDivActionA.attr("href", "#modal1");
+                $widgetDivActionA.addClass("modal-trigger")
+                $widgetDivActionA.text("More Info");
+
+                $widgetDivAction.append($widgetDivActionA);
+                $widgetDivCard.append($widgetDivContent);
+                $widgetDivCard.append($widgetDivAction);
+                $widgetDivCol.append($widgetDivCard);
+                $widgetDivRow.append($widgetDivCol);
+                $(`#Content-${location.cityId}`).append($widgetDivRow);
+
+            });
+
+        } else {
+            // Clear out existing widgets
+            $(".weatherWidgetCard").remove();
+        }
+    }
 }
 
 // ------------- Event Listeners -------------
 // Store the new location in local storage once found via google
 document.querySelector("#addButton").addEventListener("click", function(event) {
     // Get locations from local storage
-    let locationItems = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
-    if (locationItems === null) {
-        locationItems = [];
+    let locations = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
+    if (locations === null) {
+        locations = [];
     }
     
     // Set the new entry for the array
@@ -364,20 +450,20 @@ document.querySelector("#addButton").addEventListener("click", function(event) {
     }
 
     // Check if an item already exists in the array and either add new or delete and add
-    let validateCity = locationItems.filter(city => (city.cityId === cityId));
+    let validateCity = locations.filter(city => (city.cityId === cityId));
 
-    let cityIndex = locationItems.findIndex(city => (city.cityId === cityId));
+    let cityIndex = locations.findIndex(city => (city.cityId === cityId));
     if (validateCity.length === 0 && newEntry.cityId.length > 0) {
         // Does not exist in array so add
-        locationItems.push(newEntry);
+        locations.push(newEntry);
     } else if (newEntry.cityId.length > 0 && cityIndex !== -1) {
         // Does exist in the array so delete and add
-        locationItems.splice(cityIndex, 1);
-        locationItems.push(newEntry);
+        locations.splice(cityIndex, 1);
+        locations.push(newEntry);
     }
     
     // Store changes back to local storage
-    localStorage.setItem("smallTalk_searchLocations", JSON.stringify(locationItems));
+    localStorage.setItem("smallTalk_searchLocations", JSON.stringify(locations));
 
     // TODO: User Story #1 -> Location Form Reset
 
@@ -398,16 +484,11 @@ document.querySelector("#widgetsSlideOut").addEventListener("click", function(ev
         }
         const id = event.target.id || event.target.parentNode.id;
         const widgetConsName = id.substring(id.indexOf("-") + 1);
-        console.log(id);
-        console.log(widgetConsName);
-
-        console.log($(`#${id}`).prop('checked'));
 
         // Register widget inactive
         let widgetItem = {
             "widgetConsName": widgetConsName
         }
-
         // Check if an item already exists in the array and either add new or delete and add
         let validateWidget = activeWidgets.filter(widget => (widget.widgetConsName === widgetConsName));
 
@@ -424,9 +505,12 @@ document.querySelector("#widgetsSlideOut").addEventListener("click", function(ev
             // Delete entry in the array
             activeWidgets.splice(widgetIndex, 1);
         }
-    
+
         // Store changes back to local storage
         localStorage.setItem("smallTalk_activeWidgets", JSON.stringify(activeWidgets));
+
+        // Refresh the widgets
+        renderAllWidgets();
     
     }
 });
