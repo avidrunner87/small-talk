@@ -5,6 +5,9 @@ let registeredWidgets = [];
 // ------------ General Functions ------------
 // Run on web page load
 function init() {
+    // Activate Widget / Cards
+    weatherWidget(true);
+
     // Activate the page content
     renderHeader();
     renderMainContent();
@@ -14,10 +17,6 @@ function init() {
     $('.modal').modal();
     searchInputAutoComplete();
     renderSearchLocations();
-
-
-    // Activate Widget / Cards
-    weatherWidget(true);
 
     // LAST: Activate Widget Filter
     renderFilterWidgets();
@@ -137,6 +136,10 @@ function buildLocationSearch() {
     $locSlidOutSearchFormInputId.attr("id", "searchInputId");
     $locSlidOutSearchFormInputId.attr("type", "hidden");
 
+    let $locSlidOutSearchFormInputAddComponents = $("<input>");
+    $locSlidOutSearchFormInputAddComponents.attr("id", "searchInputAddComponents");
+    $locSlidOutSearchFormInputAddComponents.attr("type", "hidden");
+
     let $locSlidOutSearchFormInputLAT = $("<input>");
     $locSlidOutSearchFormInputLAT.attr("id", "searchInputLAT");
     $locSlidOutSearchFormInputLAT.attr("type", "hidden");
@@ -152,6 +155,7 @@ function buildLocationSearch() {
     $locSlidOutSearchFormDiv.append($locSlidOutSearchFormInputDiv);
     $locSlidOutSearchFormDiv.append($locSlidOutSearchFormInputShortName);
     $locSlidOutSearchFormDiv.append($locSlidOutSearchFormInputId);
+    $locSlidOutSearchFormDiv.append($locSlidOutSearchFormInputAddComponents);
     $locSlidOutSearchFormDiv.append($locSlidOutSearchFormInputLAT);
     $locSlidOutSearchFormDiv.append($locSlidOutSearchFormInputLNG);
 
@@ -374,40 +378,109 @@ function weatherWidget(onInit) {
                 $widgetDivCol.addClass("col s12 m4");
 
                 let $widgetDivCard = $("<div>");
-                $widgetDivCard.addClass("card teal lighten-1");
+                $widgetDivCard.addClass("card blue-grey lighten-4");
 
                 let $widgetDivContent = $("<div>");
-                $widgetDivContent.addClass("card-content white-text");
-
-                let $widgetDivTitle = $("<span>");
-                $widgetDivTitle.addClass("card-title");
-                $widgetDivTitle.text("Today's Weather");
-                $widgetDivContent.append($widgetDivTitle);
-
+                $widgetDivContent.addClass("card-content black-text");
 
                 // Get API Content
-                let requestUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${location.cityLAT}&lon=${location.cityLNG}&units=imperial&exclude=minutely,hourly,alerts,current&appid=33e00170884c3cd4fa86aa23f7431b3e`
+                let requestUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${location.cityLAT}&lon=${location.cityLNG}&units=imperial&exclude=minutely,hourly&appid=33e00170884c3cd4fa86aa23f7431b3e`
 
                 fetch(requestUrl)
                 .then(function (response) {
                     return response.json();
                 })
                 .then(function (data) {
+
+                    console.log(data);
+
+                    let $widgetDivTitle = $("<span>");
+                    $widgetDivTitle.addClass("card-title flow-text");
+                    $widgetDivTitle.text("Current Weather  ");
+
                     // Build the weather image next for the forecast
                     let $resultsForcWXImg = $("<img>");
-                    let forcImgSrc = `http://openweathermap.org/img/wn/${data.daily[0].weather[0].icon}@2x.png`;
+                    let forcImgSrc = `http://openweathermap.org/img/wn/${data.current.weather[0].icon}@2x.png`;
                     $resultsForcWXImg.attr("src", forcImgSrc);
-                    $resultsForcWXImg.attr("title", data.daily[0].weather[0].description);
-                    $resultsForcWXImg.attr("alt", data.daily[0].weather[0].description);
-                    $widgetDivContent.append($resultsForcWXImg);
+                    $resultsForcWXImg.attr("title", data.current.weather[0].description);
+                    $resultsForcWXImg.attr("alt", data.current.weather[0].description);
+                    $resultsForcWXImg.attr("width", "40");
+                    $widgetDivTitle.append($resultsForcWXImg);
+
+                    $widgetDivContent.append($widgetDivTitle);
+
+                    // Build the current temperature on card body
+                    let $resultsCurrWXTemp = $("<p>");
+                    let $resultsCurrWXTempTitle = $("<span>");
+                    $resultsCurrWXTempTitle.text("Temperature: ");
+                    $resultsCurrWXTemp.append($resultsCurrWXTempTitle);
+                    $resultsCurrWXTemp.append(`${Math.round(data.current.temp)} &#176;F`);
+                    $widgetDivContent.append($resultsCurrWXTemp);
+
+                    // Build the current UV index on card body
+                    let $resultsCurrWXUVI = $("<p>");
+                    let $resultsCurrWXUVITitle = $("<span>");
+                    $resultsCurrWXUVITitle.text("UV Index: ");
+                    $resultsCurrWXUVI.append($resultsCurrWXUVITitle);
+                    let $resultsCurrWXUVIBadge = $("<span>");
+                    $resultsCurrWXUVIBadge.addClass("badge");
+    
+                    let varUVI = data.current.uvi;
+    
+                    switch(true) {
+                        case (0 <= varUVI && varUVI < 3):
+                            // UV index is low
+                            $resultsCurrWXUVIBadge.addClass("green white-text");
+                            break;
+                        case ( 3 <= varUVI && varUVI < 8):
+                            // UV index is moderate to high
+                            $resultsCurrWXUVIBadge.addClass("yellow");
+                            break;
+                        case ( 8 <= varUVI):
+                            // UV index very high to extreme
+                            $resultsCurrWXUVIBadge.addClass("red white-text");
+                            break;
+                    }
+    
+                    $resultsCurrWXUVIBadge.text(varUVI);
+                    $resultsCurrWXUVI.append($resultsCurrWXUVIBadge);
+                    $widgetDivContent.append($resultsCurrWXUVI);
+
+                    // Build the 5 day forecast modal
+                    let $resultsForeWXDiv = $("<div>");
+                    $resultsForeWXDiv.attr("id", `weatherModal-${location.cityId}`);
+                    $resultsForeWXDiv.addClass("modal weatherWidgetCard");
+
+                    $resultsForeWXModContent = $("<div>");
+                    $resultsForeWXModContent.addClass("modal-content");
+
+                    $resultsForeWXModTitle = $("<h4>");
+                    $resultsForeWXModTitle.text(`5 Day Forecast for ${location.cityShortName}`);
+
+                    $resultsForeWXModFooter = $("<div>");
+                    $resultsForeWXModFooter.addClass("modal-footer");
+
+                    $resultsForeWXModFooterA = $("<a>");
+                    $resultsForeWXModFooterA.attr("href", "#!");
+                    $resultsForeWXModFooterA.addClass("modal-close waves-effect waves-green btn-flat");
+                    $resultsForeWXModFooterA.text("Close");
+                    
+                    $resultsForeWXModFooter.append($resultsForeWXModFooterA);
+                    $resultsForeWXModContent.append($resultsForeWXModTitle);
+                    $resultsForeWXModContent.append($resultsForeWXModFooter);
+                    $resultsForeWXDiv.append($resultsForeWXModContent);
+
+                    // Append the location card to the container
+                    $(".container").append($resultsForeWXDiv);
+                    
                 });
 
                 let $widgetDivAction = $("<div>");
                 $widgetDivAction.addClass("card-action");
 
                 let $widgetDivActionA = $("<a>");
-                $widgetDivActionA.attr("href", "#modal1");
-                $widgetDivActionA.addClass("modal-trigger")
+                $widgetDivActionA.attr("href", `#weatherModal-${location.cityId}`);
+                $widgetDivActionA.addClass("modal-trigger green-text")
                 $widgetDivActionA.text("More Info");
 
                 $widgetDivAction.append($widgetDivActionA);
@@ -416,7 +489,6 @@ function weatherWidget(onInit) {
                 $widgetDivCol.append($widgetDivCard);
                 $widgetDivRow.append($widgetDivCol);
                 $(`#Content-${location.cityId}`).append($widgetDivRow);
-
             });
 
         } else {
@@ -425,6 +497,16 @@ function weatherWidget(onInit) {
         }
     }
 }
+
+//<div id="modal1" class="modal">
+//  <div class="modal-content">
+//      <h4>5 Day Forecast</h4>
+//      <p>A bunch of text</p>
+//  </div>
+//  <div class="modal-footer">
+//      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+//  </div>
+//</div>
 
 // ------------- Event Listeners -------------
 // Store the new location in local storage once found via google
@@ -439,12 +521,14 @@ document.querySelector("#addButton").addEventListener("click", function(event) {
     let searchCity = $("#searchInput").val().trim();
     let cityShortName = $("#searchInputShortName").val();
     let cityId = $("#searchInputId").val();
+    let cityAddressComponents = JSON.parse($("#searchInputAddComponents").val());
     let cityLAT = $("#searchInputLAT").val();
     let cityLNG = $("#searchInputLNG").val();
     let newEntry = {
         "cityId": cityId,
         "cityName": searchCity,
         "cityShortName": cityShortName,
+        "cityAddressComponents": cityAddressComponents,
         "cityLAT": cityLAT,
         "cityLNG": cityLNG
     }
@@ -519,9 +603,12 @@ document.querySelector("#widgetsSlideOut").addEventListener("click", function(ev
 google.maps.event.addListener(autocomplete, "place_changed", function() {
     let searchPlace = autocomplete.getPlace();  
 
+    console.log(searchPlace);
+
     if (searchPlace.name !== "") {
         $("#searchInputShortName").val(searchPlace.name);
         $("#searchInputId").val(searchPlace.place_id);
+        $("#searchInputAddComponents").val(JSON.stringify(searchPlace.address_components));
         $("#searchInputLAT").val(searchPlace.geometry.location.lat());
         $("#searchInputLNG").val(searchPlace.geometry.location.lng());
 
@@ -529,6 +616,7 @@ google.maps.event.addListener(autocomplete, "place_changed", function() {
     } else {
         $("#searchInputShortName").val("");
         $("#searchInputId").val("");
+        $("#address_components").val("");
         $("#searchInputLAT").val("");
         $("#searchInputLNG").val("");
 
