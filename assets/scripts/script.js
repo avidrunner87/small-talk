@@ -136,6 +136,10 @@ function buildLocationSearch() {
     $locSlidOutSearchFormInputId.attr("id", "searchInputId");
     $locSlidOutSearchFormInputId.attr("type", "hidden");
 
+    let $locSlidOutSearchFormInputAddComponents = $("<input>");
+    $locSlidOutSearchFormInputAddComponents.attr("id", "searchInputAddComponents");
+    $locSlidOutSearchFormInputAddComponents.attr("type", "hidden");
+
     let $locSlidOutSearchFormInputLAT = $("<input>");
     $locSlidOutSearchFormInputLAT.attr("id", "searchInputLAT");
     $locSlidOutSearchFormInputLAT.attr("type", "hidden");
@@ -151,6 +155,7 @@ function buildLocationSearch() {
     $locSlidOutSearchFormDiv.append($locSlidOutSearchFormInputDiv);
     $locSlidOutSearchFormDiv.append($locSlidOutSearchFormInputShortName);
     $locSlidOutSearchFormDiv.append($locSlidOutSearchFormInputId);
+    $locSlidOutSearchFormDiv.append($locSlidOutSearchFormInputAddComponents);
     $locSlidOutSearchFormDiv.append($locSlidOutSearchFormInputLAT);
     $locSlidOutSearchFormDiv.append($locSlidOutSearchFormInputLNG);
 
@@ -516,12 +521,14 @@ document.querySelector("#addButton").addEventListener("click", function(event) {
     let searchCity = $("#searchInput").val().trim();
     let cityShortName = $("#searchInputShortName").val();
     let cityId = $("#searchInputId").val();
+    let cityAddressComponents = JSON.parse($("#searchInputAddComponents").val());
     let cityLAT = $("#searchInputLAT").val();
     let cityLNG = $("#searchInputLNG").val();
     let newEntry = {
         "cityId": cityId,
         "cityName": searchCity,
         "cityShortName": cityShortName,
+        "cityAddressComponents": cityAddressComponents,
         "cityLAT": cityLAT,
         "cityLNG": cityLNG
     }
@@ -601,6 +608,7 @@ google.maps.event.addListener(autocomplete, "place_changed", function() {
     if (searchPlace.name !== "") {
         $("#searchInputShortName").val(searchPlace.name);
         $("#searchInputId").val(searchPlace.place_id);
+        $("#searchInputAddComponents").val(JSON.stringify(searchPlace.address_components));
         $("#searchInputLAT").val(searchPlace.geometry.location.lat());
         $("#searchInputLNG").val(searchPlace.geometry.location.lng());
 
@@ -608,6 +616,7 @@ google.maps.event.addListener(autocomplete, "place_changed", function() {
     } else {
         $("#searchInputShortName").val("");
         $("#searchInputId").val("");
+        $("#address_components").val("");
         $("#searchInputLAT").val("");
         $("#searchInputLNG").val("");
 
