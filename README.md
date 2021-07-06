@@ -37,3 +37,4 @@ You can access the website [here]().
 [jQuery](https://jquery.com)<br>
 [jQueryUI](https://jqueryui.com)
 [Header Background Image](https://vcwnewrivermtrogers.com/resources/work-talk-header-1400x350/)
+[Array Sorting](https://flaviocopes.com/how-to-sort-array-of-objects-by-property-javascript/)
