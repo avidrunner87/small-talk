@@ -424,6 +424,9 @@ function weatherWidget(onInit) {
                     return response.json();
                 })
                 .then(function (data) {
+
+                    console.log(data);
+
                     let $widgetDivTitle = $("<span>");
                     $widgetDivTitle.addClass("card-title flow-text");
                     $widgetDivTitle.text("Current Weather  ");
@@ -565,9 +568,7 @@ function weatherWidget(onInit) {
                     $widgetDivCol.append($widgetDivCard);
                     $widgetDivRow.append($widgetDivCol);
                     $(`#Content-${location.cityId}`).append($widgetDivRow);
-
                 });
-
             });
 
         } else {
