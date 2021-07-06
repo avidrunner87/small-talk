@@ -622,7 +622,7 @@ $("#addButton").click(function(event) {
 
 // Update the registered Widgets local storage
 $("#widgetsSlideOut").click(function(event) {
-    if (event.target.matches("input") === true || event.target.parentNode.matches("input") === true) {
+    if ($(event.target).is("input") === true || $(event.target).parent().is("input") === true) {
         // Get active filter widgets items from local storage
         let activeWidgets = JSON.parse(localStorage.getItem("smallTalk_activeWidgets"));
         if (activeWidgets === null) {
@@ -692,5 +692,30 @@ google.maps.event.addListener(autocomplete, "place_changed", function() {
     }
 })
 
-// TODO: User Story #3 -> Delete Locations from Dashboard
-// Need an event handler for individual clicking the delete / trash can button
+// Event handler for individual clicking the delete / trash can button on location
+$("#locationSlideOut").click(function(event) {
+    if ($(event.target).is("i") === true && $(event.target).text() === "delete") {
+        let locations = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
+        if (locations === null) {
+            locations = [];
+        }
+
+        let cityId = $(event.target).attr("id");
+
+        let cityIndex = locations.findIndex(city => (city.cityId === cityId));
+        if (cityIndex !== -1) {
+            locations.splice(cityIndex, 1);
+        }
+        
+        // Store changes back to local storage
+        localStorage.setItem("smallTalk_searchLocations", JSON.stringify(locations));
+
+        $(event.target).closest("li").remove();
+
+        // Render location cards
+        buildLocationCards();
+
+        // Render Search location history
+        renderSearchLocations();
+    }
+})
