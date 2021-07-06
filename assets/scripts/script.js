@@ -614,6 +614,7 @@ function weatherWidget(onInit) {
                 $widgetDivCol.append($widgetDivCard);
                 $widgetDivRow.append($widgetDivCol);
                 $(`#Content-${location.cityId}`).append($widgetDivRow);
+
             });
 
         } else {
