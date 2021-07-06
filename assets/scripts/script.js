@@ -619,7 +619,6 @@ $("#addButton").click(function(event) {
     // Store changes back to local storage
     localStorage.setItem("smallTalk_searchLocations", JSON.stringify(locations));
 
-    // TODO: User Story #1 -> Location Form Reset
     // Reset the form for the next user input
     $("#searchInput").val("");
     $("#addButton").addClass("disabled");
