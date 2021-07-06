@@ -290,12 +290,6 @@ function renderSearchLocations() {
         locations = [];
     }
 
-    // TODO: User Story #4 -> Sort Locations
-    // locations.sort(function(a, b) {
-    //     return a.cityName - b.cityName
-    // });
-
-
     for (let i = 0; i < locations.length; i++) {
         let $searchResult = $("<li>");
         $searchResult.addClass("searchResult");
@@ -615,6 +609,10 @@ $("#addButton").click(function(event) {
         locations.splice(cityIndex, 1);
         locations.push(newEntry);
     }
+
+    // TODO: User Story #4 -> Sort Locations
+    // Sort the locations based on the city Short Name
+    locations.sort((a, b) => (a.cityShortName > b.cityShortName) ? 1 : -1);
     
     // Store changes back to local storage
     localStorage.setItem("smallTalk_searchLocations", JSON.stringify(locations));
