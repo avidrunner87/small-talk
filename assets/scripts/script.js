@@ -619,6 +619,8 @@ $("#addButton").click(function(event) {
     localStorage.setItem("smallTalk_searchLocations", JSON.stringify(locations));
 
     // TODO: User Story #1 -> Location Form Reset
+    // Reset the form for the next user input
+    $("#searchInput").val("");
 
     // Render location cards
     buildLocationCards();
