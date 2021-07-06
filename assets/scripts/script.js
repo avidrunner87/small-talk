@@ -91,6 +91,39 @@ function renderMainContent() {
     // Append filter widgets button to main container
     $(".container").append($btnFilterWidgets);
 
+    // Build the pop-up modal
+    let $ModalDiv = $("<div>");
+    $ModalDiv.attr("id", "widgetModal");
+    $ModalDiv.addClass("modal");
+
+    $ModalContent = $("<div>");
+    $ModalContent.addClass("modal-content");
+    
+    $ModalTitle = $("<h4>");
+    $ModalTitle.addClass("modal-title");
+    $ModalTitle.text("Placeholder Modal Title");
+
+    $ModalBody = $("<div>");
+    $ModalBody.addClass("modal-body row");
+    $ModalBody.text("Placeholder Modal Body");
+
+    $ModalFooter = $("<div>");
+    $ModalFooter.addClass("modal-footer");
+
+    $ModalFooterA = $("<a>");
+    $ModalFooterA.attr("href", "#!");
+    $ModalFooterA.addClass("modal-close waves-effect waves-green btn-flat");
+    $ModalFooterA.text("Close");
+    
+    $ModalFooter.append($ModalFooterA);
+    $ModalContent.append($ModalTitle);
+    $ModalContent.append($ModalBody);
+    $ModalContent.append($ModalFooter);
+    $ModalDiv.append($ModalContent);
+
+    // Append the location card to the container
+    $(".container").append($ModalDiv);
+
     // Build cards for locations
     buildLocationCards();
 }
@@ -391,9 +424,6 @@ function weatherWidget(onInit) {
                     return response.json();
                 })
                 .then(function (data) {
-
-                    console.log(data);
-
                     let $widgetDivTitle = $("<span>");
                     $widgetDivTitle.addClass("card-title flow-text");
                     $widgetDivTitle.text("Current Weather  ");
@@ -446,49 +476,98 @@ function weatherWidget(onInit) {
                     $resultsCurrWXUVI.append($resultsCurrWXUVIBadge);
                     $widgetDivContent.append($resultsCurrWXUVI);
 
-                    // Build the 5 day forecast modal
-                    let $resultsForeWXDiv = $("<div>");
-                    $resultsForeWXDiv.attr("id", `weatherModal-${location.cityId}`);
-                    $resultsForeWXDiv.addClass("modal weatherWidgetCard");
+                    let $widgetDivAction = $("<div>");
+                    $widgetDivAction.addClass("card-action");
+    
+                    let $widgetDivActionA = $("<a>");
+                    $widgetDivActionA.attr("href", "#widgetModal");
+                    $widgetDivActionA.addClass("modal-trigger green-text")
+                    $widgetDivActionA.text("More Info");
+                    $widgetDivActionA.attr("data-modal-title", `5 Day Forecast for ${location.cityShortName}`);
+    
+                    // Generate HTML for data-modal-body
+                    let $resultsForcWX = $("<div>");
+                    $resultsForcWX.addClass("row");
+    
+                    for (let i = 1; i < 6; i++) {
+                        // Build forecast weather Div
+                        let $resultsForcWXDiv = $("<div>");
+                        $resultsForcWXDiv.addClass("col s12 m4");
+    
+                        let $resultsForcWXCard = $("<div>");
+                        $resultsForcWXCard.addClass("card blue-grey lighten-4");
+    
+                        let $resultsForcWXContent = $("<div>");
+                        $resultsForcWXContent.addClass("card-content");
+    
+                        // Build the weather title
+                        let $resultsForcWXContentTitle = $("<span>")
+                        $resultsForcWXContentTitle.addClass("card-title");
+                        $resultsForcWXContentTitle.text(
+                            moment(data.daily[i].dt * 1000).calendar(null, {
+                                sameDay: '[Today]',
+                                nextDay: '[Tomorrow]',
+                                nextWeek: 'dddd',
+                                lastDay: '[Yesterday]',
+                                lastWeek: '[Last] dddd',
+                                sameElse: 'YYYY-MM-DD'
+                            }
+                            ));
+    
+                        $resultsForcWXContent.append($resultsForcWXContentTitle);
+    
+                        // Build the weather image next for the forecast
+                        let $resultsForcWXImg = $("<img>");
+                        let forcImgSrc = `http://openweathermap.org/img/wn/${data.daily[i].weather[0].icon}.png`;
+                        $resultsForcWXImg.attr("src", forcImgSrc);
+                        $resultsForcWXImg.attr("title", data.daily[i].weather[0].description);
+                        $resultsForcWXImg.attr("alt", data.daily[i].weather[0].description);
 
-                    $resultsForeWXModContent = $("<div>");
-                    $resultsForeWXModContent.addClass("modal-content");
+                        $resultsForcWXContent.append($resultsForcWXImg);
+    
+                        // Build the current temperature on card body
+                        let $resultsForcWXTemp = $("<p>");
+    
+                        let $resultsForcWXTempTitle = $("<span>");
+                        $resultsForcWXTempTitle.text("Temperature: ");
+                        $resultsForcWXTemp.append($resultsForcWXTempTitle);
+                        $resultsForcWXTemp.append(`${Math.round(data.daily[i].temp.day)} &#176;F`);
+                        $resultsForcWXContent.append($resultsForcWXTemp);
+    
+                        // Build the current wind on card body
+                        let $resultsForcWXWind = $("<p>");
+    
+                        let $resultsForcWXWindTitle = $("<span>");
+                        $resultsForcWXWindTitle.text("Wind: ");
+                        $resultsForcWXWind.append($resultsForcWXWindTitle);
+                        $resultsForcWXWind.append(`${data.daily[i].wind_speed} MPH`);
+                        $resultsForcWXContent.append($resultsForcWXWind);
+    
+                        // Build the current humidity on card body
+                        let $resultsForcWXHum = $("<p>");
+    
+                        let $resultsForcWXHumTitle = $("<span>");
+                        $resultsForcWXHumTitle.text("Humidity: ");
+                        $resultsForcWXHum.append($resultsForcWXHumTitle);
+                        $resultsForcWXHum.append(`${data.daily[i].humidity} %`);
+                        $resultsForcWXContent.append($resultsForcWXHum);
 
-                    $resultsForeWXModTitle = $("<h4>");
-                    $resultsForeWXModTitle.text(`5 Day Forecast for ${location.cityShortName}`);
+                        $resultsForcWXCard.append($resultsForcWXContent);
+                        $resultsForcWXDiv.append($resultsForcWXCard);
+                        $resultsForcWX.append($resultsForcWXDiv);
+                    }
+    
+                    $widgetDivActionA.attr("data-modal-body", $resultsForcWX.html());
+    
+                    $widgetDivAction.append($widgetDivActionA);
+                    $widgetDivCard.append($widgetDivContent);
+                    $widgetDivCard.append($widgetDivAction);
+                    $widgetDivCol.append($widgetDivCard);
+                    $widgetDivRow.append($widgetDivCol);
+                    $(`#Content-${location.cityId}`).append($widgetDivRow);
 
-                    $resultsForeWXModFooter = $("<div>");
-                    $resultsForeWXModFooter.addClass("modal-footer");
-
-                    $resultsForeWXModFooterA = $("<a>");
-                    $resultsForeWXModFooterA.attr("href", "#!");
-                    $resultsForeWXModFooterA.addClass("modal-close waves-effect waves-green btn-flat");
-                    $resultsForeWXModFooterA.text("Close");
-                    
-                    $resultsForeWXModFooter.append($resultsForeWXModFooterA);
-                    $resultsForeWXModContent.append($resultsForeWXModTitle);
-                    $resultsForeWXModContent.append($resultsForeWXModFooter);
-                    $resultsForeWXDiv.append($resultsForeWXModContent);
-
-                    // Append the location card to the container
-                    $(".container").append($resultsForeWXDiv);
-                    
                 });
 
-                let $widgetDivAction = $("<div>");
-                $widgetDivAction.addClass("card-action");
-
-                let $widgetDivActionA = $("<a>");
-                $widgetDivActionA.attr("href", `#weatherModal-${location.cityId}`);
-                $widgetDivActionA.addClass("modal-trigger green-text")
-                $widgetDivActionA.text("More Info");
-
-                $widgetDivAction.append($widgetDivActionA);
-                $widgetDivCard.append($widgetDivContent);
-                $widgetDivCard.append($widgetDivAction);
-                $widgetDivCol.append($widgetDivCard);
-                $widgetDivRow.append($widgetDivCol);
-                $(`#Content-${location.cityId}`).append($widgetDivRow);
             });
 
         } else {
@@ -498,19 +577,9 @@ function weatherWidget(onInit) {
     }
 }
 
-//<div id="modal1" class="modal">
-//  <div class="modal-content">
-//      <h4>5 Day Forecast</h4>
-//      <p>A bunch of text</p>
-//  </div>
-//  <div class="modal-footer">
-//      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
-//  </div>
-//</div>
-
 // ------------- Event Listeners -------------
 // Store the new location in local storage once found via google
-document.querySelector("#addButton").addEventListener("click", function(event) {
+$("#addButton").click(function(event) {
     // Get locations from local storage
     let locations = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
     if (locations === null) {
@@ -559,7 +628,7 @@ document.querySelector("#addButton").addEventListener("click", function(event) {
 });
 
 // Update the registered Widgets local storage
-document.querySelector("#widgetsSlideOut").addEventListener("click", function(event) {
+$("#widgetsSlideOut").click(function(event) {
     if (event.target.matches("input") === true || event.target.parentNode.matches("input") === true) {
         // Get active filter widgets items from local storage
         let activeWidgets = JSON.parse(localStorage.getItem("smallTalk_activeWidgets"));
@@ -596,6 +665,14 @@ document.querySelector("#widgetsSlideOut").addEventListener("click", function(ev
         // Refresh the widgets
         renderAllWidgets();
     
+    }
+});
+
+// Widget More Info link clicked
+$(".container").click(function(event) {
+    if($(event.target).hasClass("modal-trigger")) {
+        $(".modal-title").text($(event.target).attr("data-modal-title"));
+        $(".modal-body").html($(event.target).attr("data-modal-body"));
     }
 });
 
