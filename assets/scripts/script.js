@@ -424,9 +424,9 @@ function weatherWidget(onInit) {
                     return response.json();
                 })
                 .then(function (data) {
-                  
+
                     console.log(data);
-                  
+
                     let $widgetDivTitle = $("<span>");
                     $widgetDivTitle.addClass("card-title flow-text");
                     $widgetDivTitle.text("Current Weather  ");
@@ -568,53 +568,7 @@ function weatherWidget(onInit) {
                     $widgetDivCol.append($widgetDivCard);
                     $widgetDivRow.append($widgetDivCol);
                     $(`#Content-${location.cityId}`).append($widgetDivRow);
-
                 });
-
-                    // Build the 5 day forecast modal
-                    let $resultsForeWXDiv = $("<div>");
-                    $resultsForeWXDiv.attr("id", `weatherModal-${location.cityId}`);
-                    $resultsForeWXDiv.addClass("modal weatherWidgetCard");
-
-                    $resultsForeWXModContent = $("<div>");
-                    $resultsForeWXModContent.addClass("modal-content");
-
-                    $resultsForeWXModTitle = $("<h4>");
-                    $resultsForeWXModTitle.text(`5 Day Forecast for ${location.cityShortName}`);
-
-                    $resultsForeWXModFooter = $("<div>");
-                    $resultsForeWXModFooter.addClass("modal-footer");
-
-                    $resultsForeWXModFooterA = $("<a>");
-                    $resultsForeWXModFooterA.attr("href", "#!");
-                    $resultsForeWXModFooterA.addClass("modal-close waves-effect waves-green btn-flat");
-                    $resultsForeWXModFooterA.text("Close");
-                    
-                    $resultsForeWXModFooter.append($resultsForeWXModFooterA);
-                    $resultsForeWXModContent.append($resultsForeWXModTitle);
-                    $resultsForeWXModContent.append($resultsForeWXModFooter);
-                    $resultsForeWXDiv.append($resultsForeWXModContent);
-
-                    // Append the location card to the container
-                    $(".container").append($resultsForeWXDiv);
-                    
-                });
-
-                let $widgetDivAction = $("<div>");
-                $widgetDivAction.addClass("card-action");
-
-                let $widgetDivActionA = $("<a>");
-                $widgetDivActionA.attr("href", `#weatherModal-${location.cityId}`);
-                $widgetDivActionA.addClass("modal-trigger green-text")
-                $widgetDivActionA.text("More Info");
-
-                $widgetDivAction.append($widgetDivActionA);
-                $widgetDivCard.append($widgetDivContent);
-                $widgetDivCard.append($widgetDivAction);
-                $widgetDivCol.append($widgetDivCard);
-                $widgetDivRow.append($widgetDivCol);
-                $(`#Content-${location.cityId}`).append($widgetDivRow);
-
             });
 
         } else {
@@ -623,16 +577,6 @@ function weatherWidget(onInit) {
         }
     }
 }
-
-//<div id="modal1" class="modal">
-//  <div class="modal-content">
-//      <h4>5 Day Forecast</h4>
-//      <p>A bunch of text</p>
-//  </div>
-//  <div class="modal-footer">
-//      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
-//  </div>
-//</div>
 
 // ------------- Event Listeners -------------
 // Store the new location in local storage once found via google
@@ -676,6 +620,9 @@ $("#addButton").click(function(event) {
     localStorage.setItem("smallTalk_searchLocations", JSON.stringify(locations));
 
     // TODO: User Story #1 -> Location Form Reset
+    // Reset the form for the next user input
+    $("#searchInput").val("");
+    $("#addButton").addClass("disabled");
 
     // Render location cards
     buildLocationCards();
