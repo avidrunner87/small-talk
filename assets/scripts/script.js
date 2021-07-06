@@ -610,7 +610,6 @@ $("#addButton").click(function(event) {
         locations.push(newEntry);
     }
 
-    // TODO: User Story #4 -> Sort Locations
     // Sort the locations based on the city Short Name
     locations.sort((a, b) => (a.cityShortName > b.cityShortName) ? 1 : -1);
     
