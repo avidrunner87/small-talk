@@ -621,6 +621,7 @@ $("#addButton").click(function(event) {
     // TODO: User Story #1 -> Location Form Reset
     // Reset the form for the next user input
     $("#searchInput").val("");
+    $("#addButton").addClass("disabled");
 
     // Render location cards
     buildLocationCards();
