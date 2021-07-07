@@ -7,6 +7,8 @@ let registeredWidgets = [];
 function init() {
     // Activate Widget / Cards
     weatherWidget(true);
+    holidayWidget(true);
+    restaurantWidget(true);
     timezoneWidget(true);
 
     // Activate the page content
@@ -34,6 +36,12 @@ function renderAllWidgets() {
             case "Weather":
                 weatherWidget();
                 break;
+            case "Holiday":
+                holidayWidget();
+                break; 
+            case "Restaurant":
+                restaurantWidget();
+                break;                   
             case "TimeZone":
                 timezoneWidget();
                 break;
@@ -655,6 +663,305 @@ function timezoneWidget(onInit) {
     }
 }
 
+function holidayWidget(onInit) {
+    // UPDATE: Set widget name -> Letters and Numbers Only
+    const widgetName = "Holiday";
+    const widgetConsName = widgetName.replace(/ /g,'');
+
+    if (onInit) {
+        // Register widget if it isn't already 
+        let validateRegisteredWidget = registeredWidgets.filter(widget => (widget.widgetConsName === widgetConsName));
+        if (validateRegisteredWidget.length === 0) {
+            let widgetItem = {
+                "widgetName": widgetName,
+                "widgetConsName": widgetConsName
+            }
+            registeredWidgets.push(widgetItem);
+        }
+    } else {
+        // Get active filter widgets items from local storage
+        let activeWidgets = JSON.parse(localStorage.getItem("smallTalk_activeWidgets"));
+        if (activeWidgets === null) {
+            activeWidgets = [];
+        }
+        // Check if an item exists in the array to determine whether to show widget
+        let validateActiveWidget = activeWidgets.filter(widget => (widget.widgetConsName === widgetConsName));
+        if (validateActiveWidget.length !== 0) {
+            // Clear out existing widgets
+            $(".holidayWidgetCard").remove();
+
+            let locations = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
+            if (locations === null) { locations = []; }
+            locations.forEach(location => {                
+
+                let $widgetDivCol = $("<div>");
+                $widgetDivCol.addClass("col s12 m6 l6 xl4 holidayWidgetCard");
+
+                let $widgetDivCard = $("<div>");
+                $widgetDivCard.addClass("card blue-grey lighten-4");
+
+                let $widgetDivContent = $("<div>");
+                $widgetDivContent.addClass("card-content black-text");
+
+                /*-------------------------------------------------------------------*/
+
+                const country = location.cityAddressComponents[3].short_name;
+                const year = moment().subtract(1, "year").get("year"); /*Free Accounts cannot use current year only previous years*/
+	            const key = "cfb960ad-d79d-4da7-8b6c-740182eda567";
+	            const requestUrl = `https://holidayapi.com/v1/holidays?country=${country}&year=${year}&subdivisions=true&pretty&key=${key}`;
+                let cnt = 0;
+	            fetch(requestUrl)
+		        .then(function (response) { return response.json(); })
+		        .then(function (data) {
+                    const currentMonth = moment().format("MMMM");                    
+                    //Build Title
+                    let $widgetDivTitle = $("<span>");
+                    $widgetDivTitle.addClass("card-title flow-text");
+                    $widgetDivTitle.text(`Current Holidays: ${currentMonth}`);
+                    $widgetDivContent.append($widgetDivTitle);
+
+                    //Build Body
+                    const ulEl = $("<ul>");                    
+                    for (let i = 0; i < data.holidays.length; i++) { 
+                        const dateOne = moment(data.holidays[i].date, "YYYY-MM-DD").format("MMMM");                         
+                        if (currentMonth === dateOne) {
+                            const liEl = $("<li>");
+                            const link = $("<a>");
+                            link.attr("href", `https://en.wikipedia.org/wiki/${data.holidays[i].name}`);
+                            link.attr("title", `${data.holidays[i].name}`);
+                            link.text(`${data.holidays[i].name}`);                            
+                            liEl.append(link);
+                            liEl.css({"margin-top": "10px"});
+                            ulEl.append(liEl);                    
+                            cnt++;
+                        }
+                        if (cnt === 3) { break; }                
+                    }
+                    $widgetDivContent.append(ulEl);
+
+                    //Create the More Info Modal
+                    let $widgetDivAction = $("<div>");
+                    $widgetDivAction.addClass("card-action");
+
+                    let $widgetDivActionA = $("<a>");
+                    $widgetDivActionA.attr("href", "#widgetModal");
+                    $widgetDivActionA.addClass("modal-trigger green-text")
+                    $widgetDivActionA.text("More Info");
+                    $widgetDivActionA.attr("data-modal-title", `Future Holidays`);
+
+                    // Generate HTML for data-modal-body
+                    let $resultsMoreHolidays = $("<div>");
+                    $resultsMoreHolidays.addClass("row");
+
+                    for (let i = 1; i < 6; i++) {
+                        // Build More Holidays Div
+                        let $resultsMoreHolidaysDiv = $("<div>");
+                        $resultsMoreHolidaysDiv.addClass("col s12 m6");
+
+                        let $resultsMoreHolidaysCard = $("<div>");
+                        $resultsMoreHolidaysCard.addClass("card blue-grey lighten-4");
+
+                        let $resultsMoreHolidaysContent = $("<div>");
+                        $resultsMoreHolidaysContent.addClass("card-content");
+
+                        //Create Title
+                        const month = moment().add(30*i, "days").format("MMMM");
+                        let $resultsMoreHolidaysTitle = $("<span>")
+                        $resultsMoreHolidaysTitle.addClass("card-title");                        
+                        $resultsMoreHolidaysTitle.text(month);
+                        $resultsMoreHolidaysContent.append($resultsMoreHolidaysTitle);
+
+                        //Create Body
+                        const ulEl = $("<ul>");
+                        cnt = 0;
+                        for (let i = 0; i < data.holidays.length; i++) {
+                            const dateOne = moment(data.holidays[i].date, "YYYY-MM-DD").format("MMMM");
+                            if (month === dateOne) {
+                                const liEl = $("<li>");
+                                const link = $("<a>");                                
+                                link.attr("href", `https://en.wikipedia.org/wiki/${data.holidays[i].name}`);
+                                link.attr("title", `${data.holidays[i].name}`);
+                                link.text(`${data.holidays[i].name}`);
+                                liEl.append(link);
+                                liEl.css({"margin-top": "10px"});
+                                ulEl.append(liEl);                    
+                                cnt++;
+                            }
+                            if (cnt === 3) { break; }
+                        }                        
+                        $resultsMoreHolidaysContent.append(ulEl);
+
+                        $resultsMoreHolidaysCard.append($resultsMoreHolidaysContent);
+                        $resultsMoreHolidaysDiv.append($resultsMoreHolidaysCard);
+                        $resultsMoreHolidays.append($resultsMoreHolidaysDiv);                   
+                    }
+                    $widgetDivActionA.attr("data-modal-body", $resultsMoreHolidays.html());               
+
+                    $widgetDivAction.append($widgetDivActionA);
+                    $widgetDivCard.append($widgetDivContent);
+                    $widgetDivCard.append($widgetDivAction);
+                    $widgetDivCol.append($widgetDivCard);
+                    $(`#Content-${location.cityId}`).append($widgetDivCol);
+                    
+		        });                
+            });
+        }
+        else {
+            // Clear out existing widgets
+            $(".holidayWidgetCard").remove();            
+        }
+    }    
+}
+
+/*************************************************************************************************** */
+
+function restaurantWidget(onInit) {
+    // UPDATE: Set widget name -> Letters and Numbers Only
+    const widgetName = "Restaurant";
+    const widgetConsName = widgetName.replace(/ /g,'');
+
+    if (onInit) {
+        // Register widget if it isn't already 
+        let validateRegisteredWidget = registeredWidgets.filter(widget => (widget.widgetConsName === widgetConsName));
+        if (validateRegisteredWidget.length === 0) {
+            let widgetItem = {
+                "widgetName": widgetName,
+                "widgetConsName": widgetConsName
+            }
+            registeredWidgets.push(widgetItem);
+        }
+    } else {
+        // Get active filter widgets items from local storage
+        let activeWidgets = JSON.parse(localStorage.getItem("smallTalk_activeWidgets"));
+        if (activeWidgets === null) {
+            activeWidgets = [];
+        }
+        // Check if an item exists in the array to determine whether to show widget
+        let validateActiveWidget = activeWidgets.filter(widget => (widget.widgetConsName === widgetConsName));
+        if (validateActiveWidget.length !== 0) {
+            // Clear out existing widgets
+            $(".restaurantWidgetCard").remove();
+
+            let locations = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
+            if (locations === null) { locations = []; }
+            locations.forEach(location => {                
+
+                let $widgetDivCol = $("<div>");                
+                $widgetDivCol.addClass("col s12 m6 l6 xl4 restaurantWidgetCard");
+
+                let $widgetDivCard = $("<div>");
+                $widgetDivCard.addClass("card blue-grey lighten-4");
+
+                let $widgetDivContent = $("<div>");
+                $widgetDivContent.addClass("card-content black-text");
+
+                /*-------------------------------------------------------------------*/
+                
+                const lat = location.cityLAT;
+                const lon = location.cityLNG;
+	            const requestUrl = `https://travel-advisor.p.rapidapi.com/restaurants/list-by-latlng?latitude=${lat}&longitude=${lon}&limit=20&&distance=2&open_now=false&lunit=km&lang=en_US`;
+                const restaurantList = [];
+                fetch(requestUrl, {
+                    "method": "GET",
+                    "headers": {
+                        "x-rapidapi-key": "1ba5b53bd0msh6eeecb9c9e485adp14afd4jsn4ba8f6d6a713",
+                        "x-rapidapi-host": "travel-advisor.p.rapidapi.com"
+                    }
+                })
+                .then(function (response) { return response.json(); })
+                .then(function (data) {
+                    console.log(data);
+
+                    //Build Title
+                    let $widgetDivTitle = $("<span>");
+                    $widgetDivTitle.addClass("card-title flow-text");
+                    $widgetDivTitle.text("Popular Restaurants");
+                    $widgetDivContent.append($widgetDivTitle);
+
+                    //Build Body
+                    let ulEl = $("<ul>");   
+                    let cnt = 0;          
+                    for (let i = 0; i < data.data.length; i++) {
+                        const liEl = $("<li>");
+                        const link = $("<a>");
+                        link.attr("href", `${data.data[i].website}`);
+                        link.attr("title", `${data.data[i].name}`);
+                        link.text(`${data.data[i].name}`);                            
+                        liEl.append(link);
+                        liEl.css({ "margin-top": "10px" });
+                        ulEl.append(liEl);
+                        cnt++;
+
+                        if (cnt === 3) { break; }
+                    }
+                    $widgetDivContent.append(ulEl);   
+                    
+                    //Create the More Info Modal
+                    let $widgetDivAction = $("<div>");
+                    $widgetDivAction.addClass("card-action");
+
+                    let $widgetDivActionA = $("<a>");
+                    $widgetDivActionA.attr("href", "#widgetModal");
+                    $widgetDivActionA.addClass("modal-trigger green-text")
+                    $widgetDivActionA.text("More Info");
+                    $widgetDivActionA.attr("data-modal-title", `More Popular Restaurants`);
+
+                    // Generate HTML for data-modal-body
+                    let $resultsMoreRestaurants = $("<div>");
+                    $resultsMoreRestaurants.addClass("row");
+
+                
+                    // Build More Holidays Div
+                    let $resultsMoreRestaurantsDiv = $("<div>");
+                    $resultsMoreRestaurantsDiv.addClass("col s12 m6");
+
+                    let $resultsMoreRestaurantsCard = $("<div>");
+                    $resultsMoreRestaurantsCard.addClass("card blue-grey lighten-4");
+
+                    let $resultsMoreRestaurantsContent = $("<div>");
+                    $resultsMoreRestaurantsContent.addClass("card-content");                    
+                    
+                    //Create Body
+                    ulEl = $("<ul>");
+                    cnt = 0;
+                    for (let i = 3; i < data.data.length; i++) {
+                        const liEl = $("<li>");
+                        const link = $("<a>");
+                        if (data.data[i].name === undefined) {continue;}
+                        link.attr("href", `${data.data[i].website}`);
+                        link.attr("title", `${data.data[i].name}`);
+                        link.text(`${data.data[i].name}`);                            
+                        liEl.append(link);
+                        liEl.css({ "margin-top": "10px" });
+                        ulEl.append(liEl);
+                        cnt++;
+
+                        if (cnt === 10) { break; }
+                    }
+                    //$widgetDivContent.append(ulEl);                   
+                    $resultsMoreRestaurantsContent.append(ulEl);
+
+                    $resultsMoreRestaurantsCard.append($resultsMoreRestaurantsContent);
+                    $resultsMoreRestaurantsDiv.append($resultsMoreRestaurantsCard);
+                    $resultsMoreRestaurants.append($resultsMoreRestaurantsDiv); 
+
+                    $widgetDivActionA.attr("data-modal-body", $resultsMoreRestaurants.html());               
+
+                    $widgetDivAction.append($widgetDivActionA);
+                    $widgetDivCard.append($widgetDivContent);
+                    $widgetDivCard.append($widgetDivAction);
+                    $widgetDivCol.append($widgetDivCard);
+                    $(`#Content-${location.cityId}`).append($widgetDivCol);
+                });                
+            });
+        }
+        else {
+            // Clear out existing widgets
+            $(".restaurantWidgetCard").remove();            
+        }
+    }
+    
+}
 
 
 
@@ -818,3 +1125,9 @@ $("#locationSlideOut").click(function(event) {
         renderSearchLocations();
     }
 })
+
+
+
+/******************************************************************************************** */
+
+
