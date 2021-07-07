@@ -12,6 +12,11 @@ p {
   line-height: 2rem;
 }
 
+.row {
+  margin-left: unset;
+  margin-right: unset;
+}
+
 /* Formatting for the header */
 header {
   background-image: url("../images/header_background.jpg");

@@ -7,6 +7,7 @@ let registeredWidgets = [];
 function init() {
     // Activate Widget / Cards
     weatherWidget(true);
+    eventsWidget(true);
 
     // Activate the page content
     renderHeader();
@@ -33,7 +34,10 @@ function renderAllWidgets() {
             case "Weather":
                 weatherWidget();
                 break;
-        
+            case "Events":
+                eventsWidget();
+                break;
+
             default:
                 break;
         }
@@ -260,7 +264,7 @@ function buildLocationCards() {
 
         let $locationCardContent = $("<div>");
         $locationCardContent.attr("id", `Content-${locations[i].cityId}`);
-        $locationCardContent.addClass("card-content");
+        $locationCardContent.addClass("row card-content");
 
         // Append the location card content to card Div 
         $locationCardStack.append($locationCardContent);
@@ -398,11 +402,8 @@ function weatherWidget(onInit) {
 
             locations.forEach(location => {
 
-                let $widgetDivRow = $("<div>");
-                $widgetDivRow.addClass("row weatherWidgetCard");
-
                 let $widgetDivCol = $("<div>");
-                $widgetDivCol.addClass("col s12 m4");
+                $widgetDivCol.addClass("col s12 m6 l6 xl4 weatherWidgetCard");
 
                 let $widgetDivCard = $("<div>");
                 $widgetDivCard.addClass("card blue-grey lighten-4");
@@ -418,8 +419,6 @@ function weatherWidget(onInit) {
                     return response.json();
                 })
                 .then(function (data) {
-
-                    console.log(data);
 
                     let $widgetDivTitle = $("<span>");
                     $widgetDivTitle.addClass("card-title flow-text");
@@ -560,8 +559,7 @@ function weatherWidget(onInit) {
                     $widgetDivCard.append($widgetDivContent);
                     $widgetDivCard.append($widgetDivAction);
                     $widgetDivCol.append($widgetDivCard);
-                    $widgetDivRow.append($widgetDivCol);
-                    $(`#Content-${location.cityId}`).append($widgetDivRow);
+                    $(`#Content-${location.cityId}`).append($widgetDivCol);
                 });
             });
 
@@ -571,6 +569,215 @@ function weatherWidget(onInit) {
         }
     }
 }
+
+// Create Events Widget
+function eventsWidget(onInit) {
+    // UPDATE: Set widget name -> Letters and Numbers Only
+    const widgetName = "Events";
+    const widgetConsName = widgetName.replace(/ /g,'');
+
+    if (onInit) {
+        // Register widget if it isn't already 
+        let validateRegisteredWidget = registeredWidgets.filter(widget => (widget.widgetConsName === widgetConsName));
+        if (validateRegisteredWidget.length === 0) {
+            let widgetItem = {
+                "widgetName": widgetName,
+                "widgetConsName": widgetConsName
+            }
+            registeredWidgets.push(widgetItem);
+        }
+    } else {
+        // Get active filter widgets items from local storage
+        let activeWidgets = JSON.parse(localStorage.getItem("smallTalk_activeWidgets"));
+        if (activeWidgets === null) {
+            activeWidgets = [];
+        }
+
+        // Check if an item exists in the array to determine whether to show widget
+        let validateActiveWidget = activeWidgets.filter(widget => (widget.widgetConsName === widgetConsName));
+
+        if (validateActiveWidget.length !== 0) {
+
+            // Clear out existing widgets
+            $(".eventsWidgetCard").remove();
+
+            let locations = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
+            if (locations === null) {
+                locations = [];
+            }
+
+            locations.forEach(location => {
+
+                let $widgetDivCol = $("<div>");
+                $widgetDivCol.addClass("col s12 m6 l6 xl4 eventsWidgetCard");
+
+                let $widgetDivCard = $("<div>");
+                $widgetDivCard.addClass("card blue-grey lighten-4");
+
+                let $widgetDivContent = $("<div>");
+                $widgetDivContent.addClass("card-content black-text");
+
+                // Get API Content
+                let requestUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${location.cityLAT}&lon=${location.cityLNG}&units=imperial&exclude=minutely,hourly&appid=33e00170884c3cd4fa86aa23f7431b3e`
+
+                fetch(requestUrl)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (data) {
+
+                    let $widgetDivTitle = $("<span>");
+                    $widgetDivTitle.addClass("card-title flow-text");
+                    $widgetDivTitle.text("Upcoming Events");
+
+                    // Build the weather image next for the forecast
+                    let $resultsForcWXImg = $("<img>");
+                    let forcImgSrc = `http://openweathermap.org/img/wn/${data.current.weather[0].icon}@2x.png`;
+                    $resultsForcWXImg.attr("src", forcImgSrc);
+                    $resultsForcWXImg.attr("title", data.current.weather[0].description);
+                    $resultsForcWXImg.attr("alt", data.current.weather[0].description);
+                    $resultsForcWXImg.attr("width", "40");
+                    $widgetDivTitle.append($resultsForcWXImg);
+
+                    $widgetDivContent.append($widgetDivTitle);
+
+                    // Build the current temperature on card body
+                    let $resultsCurrWXTemp = $("<p>");
+                    let $resultsCurrWXTempTitle = $("<span>");
+                    $resultsCurrWXTempTitle.text("Temperature: ");
+                    $resultsCurrWXTemp.append($resultsCurrWXTempTitle);
+                    $resultsCurrWXTemp.append(`${Math.round(data.current.temp)} &#176;F`);
+                    $widgetDivContent.append($resultsCurrWXTemp);
+
+                    // Build the current UV index on card body
+                    let $resultsCurrWXUVI = $("<p>");
+                    let $resultsCurrWXUVITitle = $("<span>");
+                    $resultsCurrWXUVITitle.text("UV Index: ");
+                    $resultsCurrWXUVI.append($resultsCurrWXUVITitle);
+                    let $resultsCurrWXUVIBadge = $("<span>");
+                    $resultsCurrWXUVIBadge.addClass("badge");
+    
+                    let varUVI = data.current.uvi;
+    
+                    switch(true) {
+                        case (0 <= varUVI && varUVI < 3):
+                            // UV index is low
+                            $resultsCurrWXUVIBadge.addClass("green white-text");
+                            break;
+                        case ( 3 <= varUVI && varUVI < 8):
+                            // UV index is moderate to high
+                            $resultsCurrWXUVIBadge.addClass("yellow");
+                            break;
+                        case ( 8 <= varUVI):
+                            // UV index very high to extreme
+                            $resultsCurrWXUVIBadge.addClass("red white-text");
+                            break;
+                    }
+    
+                    $resultsCurrWXUVIBadge.text(varUVI);
+                    $resultsCurrWXUVI.append($resultsCurrWXUVIBadge);
+                    $widgetDivContent.append($resultsCurrWXUVI);
+
+                    let $widgetDivAction = $("<div>");
+                    $widgetDivAction.addClass("card-action");
+    
+                    let $widgetDivActionA = $("<a>");
+                    $widgetDivActionA.attr("href", "#widgetModal");
+                    $widgetDivActionA.addClass("modal-trigger green-text")
+                    $widgetDivActionA.text("More Info");
+                    $widgetDivActionA.attr("data-modal-title", `5 Day Forecast for ${location.cityShortName}`);
+    
+                    // Generate HTML for data-modal-body
+                    let $resultsForcWX = $("<div>");
+                    $resultsForcWX.addClass("row");
+    
+                    for (let i = 1; i < 6; i++) {
+                        // Build forecast weather Div
+                        let $resultsForcWXDiv = $("<div>");
+                        $resultsForcWXDiv.addClass("col s12 m4");
+    
+                        let $resultsForcWXCard = $("<div>");
+                        $resultsForcWXCard.addClass("card blue-grey lighten-4");
+    
+                        let $resultsForcWXContent = $("<div>");
+                        $resultsForcWXContent.addClass("card-content");
+    
+                        // Build the weather title
+                        let $resultsForcWXContentTitle = $("<span>")
+                        $resultsForcWXContentTitle.addClass("card-title");
+                        $resultsForcWXContentTitle.text(
+                            moment(data.daily[i].dt * 1000).calendar(null, {
+                                sameDay: '[Today]',
+                                nextDay: '[Tomorrow]',
+                                nextWeek: 'dddd',
+                                lastDay: '[Yesterday]',
+                                lastWeek: '[Last] dddd',
+                                sameElse: 'YYYY-MM-DD'
+                            }
+                            ));
+    
+                        $resultsForcWXContent.append($resultsForcWXContentTitle);
+    
+                        // Build the weather image next for the forecast
+                        let $resultsForcWXImg = $("<img>");
+                        let forcImgSrc = `http://openweathermap.org/img/wn/${data.daily[i].weather[0].icon}.png`;
+                        $resultsForcWXImg.attr("src", forcImgSrc);
+                        $resultsForcWXImg.attr("title", data.daily[i].weather[0].description);
+                        $resultsForcWXImg.attr("alt", data.daily[i].weather[0].description);
+
+                        $resultsForcWXContent.append($resultsForcWXImg);
+    
+                        // Build the current temperature on card body
+                        let $resultsForcWXTemp = $("<p>");
+    
+                        let $resultsForcWXTempTitle = $("<span>");
+                        $resultsForcWXTempTitle.text("Temperature: ");
+                        $resultsForcWXTemp.append($resultsForcWXTempTitle);
+                        $resultsForcWXTemp.append(`${Math.round(data.daily[i].temp.day)} &#176;F`);
+                        $resultsForcWXContent.append($resultsForcWXTemp);
+    
+                        // Build the current wind on card body
+                        let $resultsForcWXWind = $("<p>");
+    
+                        let $resultsForcWXWindTitle = $("<span>");
+                        $resultsForcWXWindTitle.text("Wind: ");
+                        $resultsForcWXWind.append($resultsForcWXWindTitle);
+                        $resultsForcWXWind.append(`${data.daily[i].wind_speed} MPH`);
+                        $resultsForcWXContent.append($resultsForcWXWind);
+    
+                        // Build the current humidity on card body
+                        let $resultsForcWXHum = $("<p>");
+    
+                        let $resultsForcWXHumTitle = $("<span>");
+                        $resultsForcWXHumTitle.text("Humidity: ");
+                        $resultsForcWXHum.append($resultsForcWXHumTitle);
+                        $resultsForcWXHum.append(`${data.daily[i].humidity} %`);
+                        $resultsForcWXContent.append($resultsForcWXHum);
+
+                        $resultsForcWXCard.append($resultsForcWXContent);
+                        $resultsForcWXDiv.append($resultsForcWXCard);
+                        $resultsForcWX.append($resultsForcWXDiv);
+                    }
+    
+                    $widgetDivActionA.attr("data-modal-body", $resultsForcWX.html());
+    
+                    $widgetDivAction.append($widgetDivActionA);
+                    $widgetDivCard.append($widgetDivContent);
+                    $widgetDivCard.append($widgetDivAction);
+                    $widgetDivCol.append($widgetDivCard);
+                    $(`#Content-${location.cityId}`).append($widgetDivCol);
+                });
+            });
+
+        } else {
+            // Clear out existing widgets
+            $(".eventsWidgetCard").remove();
+        }
+    }
+}
+
+
+
 
 // ------------- Event Listeners -------------
 // Store the new location in local storage once found via google
