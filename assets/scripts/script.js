@@ -705,7 +705,9 @@ function holidayWidget(onInit) {
 
                 /*-------------------------------------------------------------------*/
 
-                const country = location.cityAddressComponents[3].short_name;
+                console.log(location);
+
+                const country = location.cityAddressComponents[location.cityAddressComponents.length-1].short_name;
                 const year = moment().subtract(1, "year").get("year"); /*Free Accounts cannot use current year only previous years*/
 	            const key = "cfb960ad-d79d-4da7-8b6c-740182eda567";
 	            const requestUrl = `https://holidayapi.com/v1/holidays?country=${country}&year=${year}&subdivisions=true&pretty&key=${key}`;
