@@ -9,6 +9,7 @@ function init() {
     weatherWidget(true);
     holidayWidget(true);
     restaurantWidget(true);
+    timezoneWidget(true);
 
     // Activate the page content
     renderHeader();
@@ -41,6 +42,10 @@ function renderAllWidgets() {
             case "Restaurant":
                 restaurantWidget();
                 break;                   
+            case "TimeZone":
+                timezoneWidget();
+                break;
+
             default:
                 break;
         }
@@ -188,6 +193,10 @@ function buildLocationSearch() {
     $locSlidOutSearchFormInputLNG.attr("id", "searchInputLNG");
     $locSlidOutSearchFormInputLNG.attr("type", "hidden");
 
+    let $locSlidOutSearchFormInputUTCOffset = $("<input>");
+    $locSlidOutSearchFormInputUTCOffset.attr("id", "searchInputUTCOffset");
+    $locSlidOutSearchFormInputUTCOffset.attr("type", "hidden");
+
     $locSlidOutSearchFormInputDiv.append($locSlidOutSearchFormInput);
     $locSlidOutSearchFormInputA.append($locSlidOutSearchFormInputAIcon);
     $locSlidOutSearchFormInputDiv.append($locSlidOutSearchFormInputA);
@@ -198,6 +207,7 @@ function buildLocationSearch() {
     $locSlidOutSearchFormDiv.append($locSlidOutSearchFormInputAddComponents);
     $locSlidOutSearchFormDiv.append($locSlidOutSearchFormInputLAT);
     $locSlidOutSearchFormDiv.append($locSlidOutSearchFormInputLNG);
+    $locSlidOutSearchFormDiv.append($locSlidOutSearchFormInputUTCOffset);
 
     $locSlidOutSearchForm.append($locSlidOutSearchFormDiv);
 
@@ -267,7 +277,7 @@ function buildLocationCards() {
 
         let $locationCardContent = $("<div>");
         $locationCardContent.attr("id", `Content-${locations[i].cityId}`);
-        $locationCardContent.addClass("card-content");
+        $locationCardContent.addClass("row card-content");
 
         // Append the location card content to card Div 
         $locationCardStack.append($locationCardContent);
@@ -405,11 +415,8 @@ function weatherWidget(onInit) {
 
             locations.forEach(location => {
 
-                let $widgetDivRow = $("<div>");
-                $widgetDivRow.addClass("row weatherWidgetCard");
-
                 let $widgetDivCol = $("<div>");
-                $widgetDivCol.addClass("col s12 m4");
+                $widgetDivCol.addClass("col s12 m6 l6 xl4 weatherWidgetCard");
 
                 let $widgetDivCard = $("<div>");
                 $widgetDivCard.addClass("card blue-grey lighten-4");
@@ -425,8 +432,6 @@ function weatherWidget(onInit) {
                     return response.json();
                 })
                 .then(function (data) {
-
-                    console.log(data);
 
                     let $widgetDivTitle = $("<span>");
                     $widgetDivTitle.addClass("card-title flow-text");
@@ -567,8 +572,7 @@ function weatherWidget(onInit) {
                     $widgetDivCard.append($widgetDivContent);
                     $widgetDivCard.append($widgetDivAction);
                     $widgetDivCol.append($widgetDivCard);
-                    $widgetDivRow.append($widgetDivCol);
-                    $(`#Content-${location.cityId}`).append($widgetDivRow);
+                    $(`#Content-${location.cityId}`).append($widgetDivCol);
                 });
             });
 
@@ -579,167 +583,85 @@ function weatherWidget(onInit) {
     }
 }
 
-// ------------- Event Listeners -------------
-// Store the new location in local storage once found via google
-$("#addButton").click(function(event) {
-    // Get locations from local storage
-    let locations = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
-    if (locations === null) {
-        locations = [];
-    }
-    
-    // Set the new entry for the array
-    let searchCity = $("#searchInput").val().trim();
-    let cityShortName = $("#searchInputShortName").val();
-    let cityId = $("#searchInputId").val();
-    let cityAddressComponents = JSON.parse($("#searchInputAddComponents").val());
-    let cityLAT = $("#searchInputLAT").val();
-    let cityLNG = $("#searchInputLNG").val();
-    let newEntry = {
-        "cityId": cityId,
-        "cityName": searchCity,
-        "cityShortName": cityShortName,
-        "cityAddressComponents": cityAddressComponents,
-        "cityLAT": cityLAT,
-        "cityLNG": cityLNG
-    }
+// Create Time Zone Widget
+function timezoneWidget(onInit) {
+    // UPDATE: Set widget name -> Letters and Numbers Only
+    const widgetName = "Time Zone";
+    const widgetConsName = widgetName.replace(/ /g,'');
 
-    // Check if an item already exists in the array and either add new or delete and add
-    let validateCity = locations.filter(city => (city.cityId === cityId));
-
-    let cityIndex = locations.findIndex(city => (city.cityId === cityId));
-    if (validateCity.length === 0 && newEntry.cityId.length > 0) {
-        // Does not exist in array so add
-        locations.push(newEntry);
-    } else if (newEntry.cityId.length > 0 && cityIndex !== -1) {
-        // Does exist in the array so delete and add
-        locations.splice(cityIndex, 1);
-        locations.push(newEntry);
-    }
-
-    // Sort the locations based on the city Short Name
-    locations.sort((a, b) => (a.cityShortName > b.cityShortName) ? 1 : -1);
-    
-    // Store changes back to local storage
-    localStorage.setItem("smallTalk_searchLocations", JSON.stringify(locations));
-
-    // Reset the form for the next user input
-    $("#searchInput").val("");
-    $("#addButton").addClass("disabled");
-
-    // Render location cards
-    buildLocationCards();
-
-    // Render Search location history
-    renderSearchLocations();
-});
-
-// Update the registered Widgets local storage
-$("#widgetsSlideOut").click(function(event) {
-    if ($(event.target).is("input") === true || $(event.target).parent().is("input") === true) {
+    if (onInit) {
+        // Register widget if it isn't already 
+        let validateRegisteredWidget = registeredWidgets.filter(widget => (widget.widgetConsName === widgetConsName));
+        if (validateRegisteredWidget.length === 0) {
+            let widgetItem = {
+                "widgetName": widgetName,
+                "widgetConsName": widgetConsName
+            }
+            registeredWidgets.push(widgetItem);
+        }
+    } else {
         // Get active filter widgets items from local storage
         let activeWidgets = JSON.parse(localStorage.getItem("smallTalk_activeWidgets"));
         if (activeWidgets === null) {
             activeWidgets = [];
         }
-        const id = event.target.id || event.target.parentNode.id;
-        const widgetConsName = id.substring(id.indexOf("-") + 1);
 
-        // Register widget inactive
-        let widgetItem = {
-            "widgetConsName": widgetConsName
+        // Check if an item exists in the array to determine whether to show widget
+        let validateActiveWidget = activeWidgets.filter(widget => (widget.widgetConsName === widgetConsName));
+
+        if (validateActiveWidget.length !== 0) {
+
+            // Clear out existing widgets
+            $(".timezoneWidgetCard").remove();
+
+            let locations = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
+            if (locations === null) {
+                locations = [];
+            }
+
+            locations.forEach(location => {
+
+                let $widgetDivCol = $("<div>");
+                $widgetDivCol.addClass("col s12 m6 l6 xl4 timezoneWidgetCard");
+
+                let $widgetDivCard = $("<div>");
+                $widgetDivCard.addClass("card blue-grey lighten-4");
+
+                let $widgetDivContent = $("<div>");
+                $widgetDivContent.addClass("card-content black-text");
+
+                let $widgetDivTitle = $("<span>");
+                $widgetDivTitle.addClass("card-title flow-text");
+                $widgetDivTitle.text("Local Time");
+                $widgetDivContent.append($widgetDivTitle);
+
+                // Build the current date on card body
+                let $resultsCurrDate = $("<p>");
+                let $resultsCurrDateTitle = $("<span>");
+                $resultsCurrDateTitle.text("Date: ");
+                $resultsCurrDate.append($resultsCurrDateTitle);
+                $resultsCurrDate.append(dayjs().utcOffset(location.cityUTCOffset/60).format("MMM DD, YYYY"));
+                $widgetDivContent.append($resultsCurrDate);
+
+                // Build the current time on card body
+                let $resultsCurrTime = $("<p>");
+                let $resultsCurrTimeTitle = $("<span>");
+                $resultsCurrTimeTitle.text("Time: ");
+                $resultsCurrTime.append($resultsCurrTimeTitle);
+                $resultsCurrTime.append(dayjs().utcOffset(location.cityUTCOffset/60).format("h:mm A"));
+                $widgetDivContent.append($resultsCurrTime);
+
+                $widgetDivCard.append($widgetDivContent);
+                $widgetDivCol.append($widgetDivCard);
+                $(`#Content-${location.cityId}`).append($widgetDivCol);
+            });
+
+        } else {
+            // Clear out existing widgets
+            $(".timezoneWidgetCard").remove();
         }
-        // Check if an item already exists in the array and either add new or delete and add
-        let validateWidget = activeWidgets.filter(widget => (widget.widgetConsName === widgetConsName));
-
-        let widgetIndex = activeWidgets.findIndex(widget => (widget.widgetConsName === widgetConsName));
-
-        if (validateWidget.length === 0 && $(`#${id}`).prop('checked')) {
-            // Does not exist in array so add
-            activeWidgets.push(widgetItem);
-        } else if (validateWidget.length !== 0 && widgetIndex !== -1 && $(`#${id}`).prop('checked')) {
-            // Does exist in the array so delete and add
-            activeWidgets.splice(widgetIndex, 1);
-            activeWidgets.push(widgetItem);
-        } else if (widgetIndex !== -1) {
-            // Delete entry in the array
-            activeWidgets.splice(widgetIndex, 1);
-        }
-
-        // Store changes back to local storage
-        localStorage.setItem("smallTalk_activeWidgets", JSON.stringify(activeWidgets));
-
-        // Refresh the widgets
-        renderAllWidgets();
-    
     }
-});
-
-// Widget More Info link clicked
-$(".container").click(function(event) {
-    if($(event.target).hasClass("modal-trigger")) {
-        $(".modal-title").text($(event.target).attr("data-modal-title"));
-        $(".modal-body").html($(event.target).attr("data-modal-body"));
-    }
-});
-
-// Google event listener for the location search field
-google.maps.event.addListener(autocomplete, "place_changed", function() {
-    let searchPlace = autocomplete.getPlace();  
-
-    console.log(searchPlace);
-
-    if (searchPlace.name !== "") {
-        $("#searchInputShortName").val(searchPlace.name);
-        $("#searchInputId").val(searchPlace.place_id);
-        $("#searchInputAddComponents").val(JSON.stringify(searchPlace.address_components));
-        $("#searchInputLAT").val(searchPlace.geometry.location.lat());
-        $("#searchInputLNG").val(searchPlace.geometry.location.lng());
-
-        $("#addButton").removeClass("disabled");
-    } else {
-        $("#searchInputShortName").val("");
-        $("#searchInputId").val("");
-        $("#address_components").val("");
-        $("#searchInputLAT").val("");
-        $("#searchInputLNG").val("");
-
-        $("#addButton").addClass("disabled");
-    }
-})
-
-// Event handler for individual clicking the delete / trash can button on location
-$("#locationSlideOut").click(function(event) {
-    if ($(event.target).is("i") === true && $(event.target).text() === "delete") {
-        let locations = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
-        if (locations === null) {
-            locations = [];
-        }
-
-        let cityId = $(event.target).attr("id");
-
-        let cityIndex = locations.findIndex(city => (city.cityId === cityId));
-        if (cityIndex !== -1) {
-            locations.splice(cityIndex, 1);
-        }
-        
-        // Store changes back to local storage
-        localStorage.setItem("smallTalk_searchLocations", JSON.stringify(locations));
-
-        $(event.target).closest("li").remove();
-
-        // Render location cards
-        buildLocationCards();
-
-        // Render Search location history
-        renderSearchLocations();
-    }
-})
-
-
-
-/******************************************************************************************** */
-
+}
 
 function holidayWidget(onInit) {
     // UPDATE: Set widget name -> Letters and Numbers Only
@@ -770,13 +692,10 @@ function holidayWidget(onInit) {
 
             let locations = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
             if (locations === null) { locations = []; }
-            locations.forEach(location => {
-
-                let $widgetDivRow = $("<div>");
-                $widgetDivRow.addClass("row holidayWidgetCard");
+            locations.forEach(location => {                
 
                 let $widgetDivCol = $("<div>");
-                $widgetDivCol.addClass("col s12 m6");
+                $widgetDivCol.addClass("col s12 m6 l6 xl4 holidayWidgetCard");
 
                 let $widgetDivCard = $("<div>");
                 $widgetDivCard.addClass("card blue-grey lighten-4");
@@ -882,8 +801,7 @@ function holidayWidget(onInit) {
                     $widgetDivCard.append($widgetDivContent);
                     $widgetDivCard.append($widgetDivAction);
                     $widgetDivCol.append($widgetDivCard);
-                    $widgetDivRow.append($widgetDivCol);
-                    $(`#Content-${location.cityId}`).append($widgetDivRow);
+                    $(`#Content-${location.cityId}`).append($widgetDivCol);
                     
 		        });                
             });
@@ -926,13 +844,10 @@ function restaurantWidget(onInit) {
 
             let locations = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
             if (locations === null) { locations = []; }
-            locations.forEach(location => {
+            locations.forEach(location => {                
 
-                let $widgetDivRow = $("<div>");
-                $widgetDivRow.addClass("row restaurantWidgetCard");
-
-                let $widgetDivCol = $("<div>");
-                $widgetDivCol.addClass("col s12 m6");
+                let $widgetDivCol = $("<div>");                
+                $widgetDivCol.addClass("col s12 m6 l6 xl4 restaurantWidgetCard");
 
                 let $widgetDivCard = $("<div>");
                 $widgetDivCard.addClass("card blue-grey lighten-4");
@@ -1036,8 +951,7 @@ function restaurantWidget(onInit) {
                     $widgetDivCard.append($widgetDivContent);
                     $widgetDivCard.append($widgetDivAction);
                     $widgetDivCol.append($widgetDivCard);
-                    $widgetDivRow.append($widgetDivCol);
-                    $(`#Content-${location.cityId}`).append($widgetDivRow);
+                    $(`#Content-${location.cityId}`).append($widgetDivCol);
                 });                
             });
         }
@@ -1048,3 +962,172 @@ function restaurantWidget(onInit) {
     }
     
 }
+
+
+
+// ------------- Event Listeners -------------
+// Store the new location in local storage once found via google
+$("#addButton").click(function(event) {
+    // Get locations from local storage
+    let locations = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
+    if (locations === null) {
+        locations = [];
+    }
+    
+    // Set the new entry for the array
+    let searchCity = $("#searchInput").val().trim();
+    let cityShortName = $("#searchInputShortName").val();
+    let cityId = $("#searchInputId").val();
+    let cityAddressComponents = JSON.parse($("#searchInputAddComponents").val());
+    let cityLAT = $("#searchInputLAT").val();
+    let cityLNG = $("#searchInputLNG").val();
+    let cityUTCOffset = $("#searchInputUTCOffset").val();
+    let newEntry = {
+        "cityId": cityId,
+        "cityName": searchCity,
+        "cityShortName": cityShortName,
+        "cityAddressComponents": cityAddressComponents,
+        "cityLAT": cityLAT,
+        "cityLNG": cityLNG,
+        "cityUTCOffset": cityUTCOffset
+    }
+
+    // Check if an item already exists in the array and either add new or delete and add
+    let validateCity = locations.filter(city => (city.cityId === cityId));
+
+    let cityIndex = locations.findIndex(city => (city.cityId === cityId));
+    if (validateCity.length === 0 && newEntry.cityId.length > 0) {
+        // Does not exist in array so add
+        locations.push(newEntry);
+    } else if (newEntry.cityId.length > 0 && cityIndex !== -1) {
+        // Does exist in the array so delete and add
+        locations.splice(cityIndex, 1);
+        locations.push(newEntry);
+    }
+
+    // Sort the locations based on the city Short Name
+    locations.sort((a, b) => (a.cityShortName > b.cityShortName) ? 1 : -1);
+    
+    // Store changes back to local storage
+    localStorage.setItem("smallTalk_searchLocations", JSON.stringify(locations));
+
+    // Reset the form for the next user input
+    $("#searchInput").val("");
+    $("#addButton").addClass("disabled");
+
+    // Render location cards
+    buildLocationCards();
+
+    // Render Search location history
+    renderSearchLocations();
+});
+
+// Update the registered Widgets local storage
+$("#widgetsSlideOut").click(function(event) {
+    if ($(event.target).is("input") === true || $(event.target).parent().is("input") === true) {
+        // Get active filter widgets items from local storage
+        let activeWidgets = JSON.parse(localStorage.getItem("smallTalk_activeWidgets"));
+        if (activeWidgets === null) {
+            activeWidgets = [];
+        }
+        const id = event.target.id || event.target.parentNode.id;
+        const widgetConsName = id.substring(id.indexOf("-") + 1);
+
+        // Register widget inactive
+        let widgetItem = {
+            "widgetConsName": widgetConsName
+        }
+        // Check if an item already exists in the array and either add new or delete and add
+        let validateWidget = activeWidgets.filter(widget => (widget.widgetConsName === widgetConsName));
+
+        let widgetIndex = activeWidgets.findIndex(widget => (widget.widgetConsName === widgetConsName));
+
+        if (validateWidget.length === 0 && $(`#${id}`).prop('checked')) {
+            // Does not exist in array so add
+            activeWidgets.push(widgetItem);
+        } else if (validateWidget.length !== 0 && widgetIndex !== -1 && $(`#${id}`).prop('checked')) {
+            // Does exist in the array so delete and add
+            activeWidgets.splice(widgetIndex, 1);
+            activeWidgets.push(widgetItem);
+        } else if (widgetIndex !== -1) {
+            // Delete entry in the array
+            activeWidgets.splice(widgetIndex, 1);
+        }
+
+        // Store changes back to local storage
+        localStorage.setItem("smallTalk_activeWidgets", JSON.stringify(activeWidgets));
+
+        // Refresh the widgets
+        renderAllWidgets();
+    
+    }
+});
+
+// Widget More Info link clicked
+$(".container").click(function(event) {
+    if($(event.target).hasClass("modal-trigger")) {
+        $(".modal-title").text($(event.target).attr("data-modal-title"));
+        $(".modal-body").html($(event.target).attr("data-modal-body"));
+    }
+});
+
+// Google event listener for the location search field
+google.maps.event.addListener(autocomplete, "place_changed", function() {
+    let searchPlace = autocomplete.getPlace();  
+
+    console.log(searchPlace);
+
+    if (searchPlace.name !== "") {
+        $("#searchInputShortName").val(searchPlace.name);
+        $("#searchInputId").val(searchPlace.place_id);
+        $("#searchInputAddComponents").val(JSON.stringify(searchPlace.address_components));
+        $("#searchInputLAT").val(searchPlace.geometry.location.lat());
+        $("#searchInputLNG").val(searchPlace.geometry.location.lng());
+        $("#searchInputUTCOffset").val(searchPlace.utc_offset_minutes);
+
+        $("#addButton").removeClass("disabled");
+    } else {
+        $("#searchInputShortName").val("");
+        $("#searchInputId").val("");
+        $("#address_components").val("");
+        $("#searchInputLAT").val("");
+        $("#searchInputLNG").val("");
+        $("#searchInputUTCOffset").val("");
+
+        $("#addButton").addClass("disabled");
+    }
+})
+
+// Event handler for individual clicking the delete / trash can button on location
+$("#locationSlideOut").click(function(event) {
+    if ($(event.target).is("i") === true && $(event.target).text() === "delete") {
+        let locations = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
+        if (locations === null) {
+            locations = [];
+        }
+
+        let cityId = $(event.target).attr("id");
+
+        let cityIndex = locations.findIndex(city => (city.cityId === cityId));
+        if (cityIndex !== -1) {
+            locations.splice(cityIndex, 1);
+        }
+        
+        // Store changes back to local storage
+        localStorage.setItem("smallTalk_searchLocations", JSON.stringify(locations));
+
+        $(event.target).closest("li").remove();
+
+        // Render location cards
+        buildLocationCards();
+
+        // Render Search location history
+        renderSearchLocations();
+    }
+})
+
+
+
+/******************************************************************************************** */
+
+
