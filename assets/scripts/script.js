@@ -7,7 +7,7 @@ let registeredWidgets = [];
 function init() {
     // Activate Widget / Cards
     weatherWidget(true);
-    eventsWidget(true);
+    timezoneWidget(true);
 
     // Activate the page content
     renderHeader();
@@ -34,8 +34,8 @@ function renderAllWidgets() {
             case "Weather":
                 weatherWidget();
                 break;
-            case "Events":
-                eventsWidget();
+            case "Time":
+                timezoneWidget();
                 break;
 
             default:
@@ -571,9 +571,9 @@ function weatherWidget(onInit) {
 }
 
 // Create Events Widget
-function eventsWidget(onInit) {
+function timezoneWidget(onInit) {
     // UPDATE: Set widget name -> Letters and Numbers Only
-    const widgetName = "Events";
+    const widgetName = "Time Zone";
     const widgetConsName = widgetName.replace(/ /g,'');
 
     if (onInit) {
@@ -599,7 +599,7 @@ function eventsWidget(onInit) {
         if (validateActiveWidget.length !== 0) {
 
             // Clear out existing widgets
-            $(".eventsWidgetCard").remove();
+            $(".timezoneWidgetCard").remove();
 
             let locations = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
             if (locations === null) {
@@ -609,7 +609,7 @@ function eventsWidget(onInit) {
             locations.forEach(location => {
 
                 let $widgetDivCol = $("<div>");
-                $widgetDivCol.addClass("col s12 m6 l6 xl4 eventsWidgetCard");
+                $widgetDivCol.addClass("col s12 m6 l6 xl4 timezoneWidgetCard");
 
                 let $widgetDivCard = $("<div>");
                 $widgetDivCard.addClass("card blue-grey lighten-4");
@@ -771,7 +771,7 @@ function eventsWidget(onInit) {
 
         } else {
             // Clear out existing widgets
-            $(".eventsWidgetCard").remove();
+            $(".timezoneWidgetCard").remove();
         }
     }
 }
