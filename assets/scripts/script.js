@@ -705,8 +705,6 @@ function holidayWidget(onInit) {
 
                 /*-------------------------------------------------------------------*/
 
-                console.log(location);
-
                 const country = location.cityAddressComponents[location.cityAddressComponents.length-1].short_name;
                 const year = moment().subtract(1, "year").get("year"); /*Free Accounts cannot use current year only previous years*/
 	            const key = "cfb960ad-d79d-4da7-8b6c-740182eda567";
