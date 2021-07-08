@@ -800,7 +800,7 @@ function holidayWidget(onInit) {
                     $widgetDivAction.append($widgetDivActionA);
                     $widgetDivCard.append($widgetDivContent);
                     $widgetDivCard.append($widgetDivAction);
-                    $widgetDivCol.append($widgetDivCard);
+                    $widgetDivCol.append($widgetDivCard); 
                     $(`#Content-${location.cityId}`).append($widgetDivCol);
                     
 		        });                
