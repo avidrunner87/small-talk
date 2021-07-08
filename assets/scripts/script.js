@@ -103,6 +103,23 @@ function renderMainContent() {
     // Append filter widgets button to main container
     $(".container").append($btnFilterWidgets);
 
+    // Build button to clear settings
+    let $btnClearSettings = $("<a>");
+    $btnClearSettings.attr("id", "clearSettings");
+    // $btnClearSettings.attr("href", "#");
+    // $btnClearSettings.attr("data-target", "widgetsSlideOut");
+    $btnClearSettings.addClass("sidenav-trigger waves-effect waves-light btn");
+
+    let $btnClearSettingsIcon = $("<i>");
+    $btnClearSettingsIcon.addClass("material-icons left");
+    $btnClearSettingsIcon.text("clear");
+
+    $btnClearSettings.append($btnClearSettingsIcon);
+    $btnClearSettings.append("Clear Settings");
+
+    // Append filter widgets button to main container
+    $(".container").append($btnClearSettings);
+
     // Build the pop-up modal
     let $ModalDiv = $("<div>");
     $ModalDiv.attr("id", "widgetModal");
