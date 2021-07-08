@@ -106,8 +106,6 @@ function renderMainContent() {
     // Build button to clear settings
     let $btnClearSettings = $("<a>");
     $btnClearSettings.attr("id", "clearSettings");
-    // $btnClearSettings.attr("href", "#");
-    // $btnClearSettings.attr("data-target", "widgetsSlideOut");
     $btnClearSettings.addClass("waves-effect waves-light btn pink lighten-1");
 
     let $btnClearSettingsIcon = $("<i>");
@@ -463,7 +461,7 @@ function weatherWidget(onInit) {
 
                     // Build the weather image next for the forecast
                     let $resultsForcWXImg = $("<img>");
-                    let forcImgSrc = `http://openweathermap.org/img/wn/${data.current.weather[0].icon}@2x.png`;
+                    let forcImgSrc = `https://openweathermap.org/img/wn/${data.current.weather[0].icon}@2x.png`;
                     $resultsForcWXImg.attr("src", forcImgSrc);
                     $resultsForcWXImg.attr("title", data.current.weather[0].description);
                     $resultsForcWXImg.attr("alt", data.current.weather[0].description);
@@ -1096,6 +1094,9 @@ $("#clearSettings").click(function(event) {
 
     // Render Search location history
     renderSearchLocations();
+
+    // Render Filter Widgets
+    renderFilterWidgets();
 });
 
 // Widget More Info link clicked
