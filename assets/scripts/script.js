@@ -800,7 +800,7 @@ function holidayWidget(onInit) {
                     $widgetDivAction.append($widgetDivActionA);
                     $widgetDivCard.append($widgetDivContent);
                     $widgetDivCard.append($widgetDivAction);
-                    $widgetDivCol.append($widgetDivCard);
+                    $widgetDivCol.append($widgetDivCard); 
                     $(`#Content-${location.cityId}`).append($widgetDivCol);
                     
 		        });                
@@ -870,7 +870,6 @@ function restaurantWidget(onInit) {
                 })
                 .then(function (response) { return response.json(); })
                 .then(function (data) {
-                    console.log(data);
 
                     //Build Title
                     let $widgetDivTitle = $("<span>");
@@ -908,18 +907,18 @@ function restaurantWidget(onInit) {
 
                     // Generate HTML for data-modal-body
                     let $resultsMoreRestaurants = $("<div>");
-                    $resultsMoreRestaurants.addClass("row");
+                    $resultsMoreRestaurants.addClass("row"); 
 
                 
                     // Build More Holidays Div
-                    let $resultsMoreRestaurantsDiv = $("<div>");
+                    let $resultsMoreRestaurantsDiv = $("<div>"); 
                     $resultsMoreRestaurantsDiv.addClass("col s12 m6");
 
                     let $resultsMoreRestaurantsCard = $("<div>");
                     $resultsMoreRestaurantsCard.addClass("card blue-grey lighten-4");
 
                     let $resultsMoreRestaurantsContent = $("<div>");
-                    $resultsMoreRestaurantsContent.addClass("card-content");                    
+                    $resultsMoreRestaurantsContent.addClass("card-content");                     
                     
                     //Create Body
                     ulEl = $("<ul>");
@@ -1074,8 +1073,6 @@ $(".container").click(function(event) {
 // Google event listener for the location search field
 google.maps.event.addListener(autocomplete, "place_changed", function() {
     let searchPlace = autocomplete.getPlace();  
-
-    console.log(searchPlace);
 
     if (searchPlace.name !== "") {
         $("#searchInputShortName").val(searchPlace.name);
