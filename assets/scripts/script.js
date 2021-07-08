@@ -103,6 +103,23 @@ function renderMainContent() {
     // Append filter widgets button to main container
     $(".container").append($btnFilterWidgets);
 
+    // Build button to clear settings
+    let $btnClearSettings = $("<a>");
+    $btnClearSettings.attr("id", "clearSettings");
+    // $btnClearSettings.attr("href", "#");
+    // $btnClearSettings.attr("data-target", "widgetsSlideOut");
+    $btnClearSettings.addClass("waves-effect waves-light btn pink lighten-1");
+
+    let $btnClearSettingsIcon = $("<i>");
+    $btnClearSettingsIcon.addClass("material-icons left");
+    $btnClearSettingsIcon.text("clear");
+
+    $btnClearSettings.append($btnClearSettingsIcon);
+    $btnClearSettings.append("Clear Settings");
+
+    // Append filter widgets button to main container
+    $(".container").append($btnClearSettings);
+
     // Build the pop-up modal
     let $ModalDiv = $("<div>");
     $ModalDiv.attr("id", "widgetModal");
@@ -253,6 +270,13 @@ function buildLocationCards() {
     let locations = JSON.parse(localStorage.getItem("smallTalk_searchLocations"));
     if (locations === null) {
         locations = [];
+        
+        let $defaultMessage = $("<div>");
+        $defaultMessage.addClass("locationCard grey-text");
+        $defaultMessage.text("Please select at least one location and widget.");
+
+        // Append the location card to the container
+        $(".container").append($defaultMessage);
     }
 
     for (let i = 0; i < locations.length; i++) {
@@ -856,7 +880,7 @@ function restaurantWidget(onInit) {
                 $widgetDivContent.addClass("card-content black-text");
 
                 /*-------------------------------------------------------------------*/
-                
+
                 const lat = location.cityLAT;
                 const lon = location.cityLNG;
 	            const requestUrl = `https://travel-advisor.p.rapidapi.com/restaurants/list-by-latlng?latitude=${lat}&longitude=${lon}&limit=20&&distance=2&open_now=false&lunit=km&lang=en_US`;
@@ -1060,6 +1084,18 @@ $("#widgetsSlideOut").click(function(event) {
         renderAllWidgets();
     
     }
+});
+
+// Event listener for clearing the settings
+$("#clearSettings").click(function(event) {
+    localStorage.removeItem("smallTalk_searchLocations");
+    localStorage.removeItem("smallTalk_activeWidgets");
+
+    // Render location cards
+    buildLocationCards();
+
+    // Render Search location history
+    renderSearchLocations();
 });
 
 // Widget More Info link clicked
