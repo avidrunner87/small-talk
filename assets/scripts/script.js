@@ -732,8 +732,7 @@ function holidayWidget(onInit) {
                             link.text(`${data.holidays[i].name}`);                            
                             liEl.append(link);
                             liEl.css({"margin-top": "10px"});
-                            ulEl.append(liEl);   
-                            $("li::before").css({"": "red"})                 
+                            ulEl.append(liEl);                  
                             cnt++;
                         }
                         if (cnt === 3) { break; }                
