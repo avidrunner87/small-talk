@@ -768,7 +768,7 @@ function holidayWidget(onInit) {
                         const month = moment().add(30*i, "days").format("MMMM");
                         let $resultsMoreHolidaysTitle = $("<span>")
                         $resultsMoreHolidaysTitle.addClass("card-title");                        
-                        $resultsMoreHolidaysTitle.text(month); 
+                        $resultsMoreHolidaysTitle.text(month);  
                         $resultsMoreHolidaysContent.append($resultsMoreHolidaysTitle);
 
                         //Create Body
