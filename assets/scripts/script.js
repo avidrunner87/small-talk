@@ -918,7 +918,7 @@ function restaurantWidget(onInit) {
                     $resultsMoreRestaurantsCard.addClass("card blue-grey lighten-4");
 
                     let $resultsMoreRestaurantsContent = $("<div>");
-                    $resultsMoreRestaurantsContent.addClass("card-content");                    
+                    $resultsMoreRestaurantsContent.addClass("card-content");                     
                     
                     //Create Body
                     ulEl = $("<ul>");
