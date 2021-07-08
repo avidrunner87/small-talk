@@ -705,7 +705,7 @@ function holidayWidget(onInit) {
 
                 /*-------------------------------------------------------------------*/
 
-                const country = location.cityAddressComponents[3].short_name;
+                const country = location.cityAddressComponents[location.cityAddressComponents.length-1].short_name;
                 const year = moment().subtract(1, "year").get("year"); /*Free Accounts cannot use current year only previous years*/
 	            const key = "cfb960ad-d79d-4da7-8b6c-740182eda567";
 	            const requestUrl = `https://holidayapi.com/v1/holidays?country=${country}&year=${year}&subdivisions=true&pretty&key=${key}`;
@@ -721,29 +721,29 @@ function holidayWidget(onInit) {
                     $widgetDivContent.append($widgetDivTitle);
 
                     //Build Body
-                    const ulEl = $("<ul>");                    
+                    const ulEl = $("<ul>");                 
                     for (let i = 0; i < data.holidays.length; i++) { 
                         const dateOne = moment(data.holidays[i].date, "YYYY-MM-DD").format("MMMM");                         
                         if (currentMonth === dateOne) {
                             const liEl = $("<li>");
-                            const link = $("<a>");
+                            const link = $("<a>");                            
                             link.attr("href", `https://en.wikipedia.org/wiki/${data.holidays[i].name}`);
                             link.attr("title", `${data.holidays[i].name}`);
                             link.text(`${data.holidays[i].name}`);                            
                             liEl.append(link);
                             liEl.css({"margin-top": "10px"});
-                            ulEl.append(liEl);                    
+                            ulEl.append(liEl);                  
                             cnt++;
                         }
                         if (cnt === 3) { break; }                
-                    }
+                    }                    
                     $widgetDivContent.append(ulEl);
 
                     //Create the More Info Modal
                     let $widgetDivAction = $("<div>");
                     $widgetDivAction.addClass("card-action");
 
-                    let $widgetDivActionA = $("<a>");
+                    let $widgetDivActionA = $("<a>"); 
                     $widgetDivActionA.attr("href", "#widgetModal");
                     $widgetDivActionA.addClass("modal-trigger green-text")
                     $widgetDivActionA.text("More Info");
@@ -768,12 +768,12 @@ function holidayWidget(onInit) {
                         const month = moment().add(30*i, "days").format("MMMM");
                         let $resultsMoreHolidaysTitle = $("<span>")
                         $resultsMoreHolidaysTitle.addClass("card-title");                        
-                        $resultsMoreHolidaysTitle.text(month);
+                        $resultsMoreHolidaysTitle.text(month);  
                         $resultsMoreHolidaysContent.append($resultsMoreHolidaysTitle);
 
                         //Create Body
                         const ulEl = $("<ul>");
-                        cnt = 0;
+                        cnt = 0; 
                         for (let i = 0; i < data.holidays.length; i++) {
                             const dateOne = moment(data.holidays[i].date, "YYYY-MM-DD").format("MMMM");
                             if (month === dateOne) {
@@ -936,7 +936,7 @@ function restaurantWidget(onInit) {
                         ulEl.append(liEl);
                         cnt++;
 
-                        if (cnt === 10) { break; }
+                        if (cnt === 10) { break; } 
                     }
                     //$widgetDivContent.append(ulEl);                   
                     $resultsMoreRestaurantsContent.append(ulEl);
