@@ -773,7 +773,7 @@ function holidayWidget(onInit) {
 
                         //Create Body
                         const ulEl = $("<ul>");
-                        cnt = 0;
+                        cnt = 0; 
                         for (let i = 0; i < data.holidays.length; i++) {
                             const dateOne = moment(data.holidays[i].date, "YYYY-MM-DD").format("MMMM");
                             if (month === dateOne) {
