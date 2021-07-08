@@ -870,7 +870,6 @@ function restaurantWidget(onInit) {
                 })
                 .then(function (response) { return response.json(); })
                 .then(function (data) {
-                    console.log(data);
 
                     //Build Title
                     let $widgetDivTitle = $("<span>");
@@ -908,7 +907,7 @@ function restaurantWidget(onInit) {
 
                     // Generate HTML for data-modal-body
                     let $resultsMoreRestaurants = $("<div>");
-                    $resultsMoreRestaurants.addClass("row");
+                    $resultsMoreRestaurants.addClass("row"); 
 
                 
                     // Build More Holidays Div
@@ -1074,8 +1073,6 @@ $(".container").click(function(event) {
 // Google event listener for the location search field
 google.maps.event.addListener(autocomplete, "place_changed", function() {
     let searchPlace = autocomplete.getPlace();  
-
-    console.log(searchPlace);
 
     if (searchPlace.name !== "") {
         $("#searchInputShortName").val(searchPlace.name);
