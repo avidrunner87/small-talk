@@ -726,17 +726,18 @@ function holidayWidget(onInit) {
                         const dateOne = moment(data.holidays[i].date, "YYYY-MM-DD").format("MMMM");                         
                         if (currentMonth === dateOne) {
                             const liEl = $("<li>");
-                            const link = $("<a>");
+                            const link = $("<a>");                            
                             link.attr("href", `https://en.wikipedia.org/wiki/${data.holidays[i].name}`);
                             link.attr("title", `${data.holidays[i].name}`);
                             link.text(`${data.holidays[i].name}`);                            
                             liEl.append(link);
                             liEl.css({"margin-top": "10px"});
-                            ulEl.append(liEl);                    
+                            ulEl.append(liEl);   
+                            $("li::before").css({"": "red"})                 
                             cnt++;
                         }
                         if (cnt === 3) { break; }                
-                    }
+                    }                    
                     $widgetDivContent.append(ulEl);
 
                     //Create the More Info Modal
@@ -936,7 +937,7 @@ function restaurantWidget(onInit) {
                         ulEl.append(liEl);
                         cnt++;
 
-                        if (cnt === 10) { break; }
+                        if (cnt === 10) { break; } 
                     }
                     //$widgetDivContent.append(ulEl);                   
                     $resultsMoreRestaurantsContent.append(ulEl);
