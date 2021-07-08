@@ -1041,9 +1041,6 @@ $("#addButton").click(function(event) {
 
     // Render Search location history
     renderSearchLocations();
-
-    // Render Filter Widgets
-    renderFilterWidgets();
 });
 
 // Update the registered Widgets local storage
@@ -1097,6 +1094,9 @@ $("#clearSettings").click(function(event) {
 
     // Render Search location history
     renderSearchLocations();
+
+    // Render Filter Widgets
+    renderFilterWidgets();
 });
 
 // Widget More Info link clicked
