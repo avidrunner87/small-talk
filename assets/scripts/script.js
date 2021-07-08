@@ -911,7 +911,7 @@ function restaurantWidget(onInit) {
 
                 
                     // Build More Holidays Div
-                    let $resultsMoreRestaurantsDiv = $("<div>");
+                    let $resultsMoreRestaurantsDiv = $("<div>"); 
                     $resultsMoreRestaurantsDiv.addClass("col s12 m6");
 
                     let $resultsMoreRestaurantsCard = $("<div>");
