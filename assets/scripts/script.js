@@ -721,7 +721,7 @@ function holidayWidget(onInit) {
                     $widgetDivContent.append($widgetDivTitle);
 
                     //Build Body
-                    const ulEl = $("<ul>");                    
+                    const ulEl = $("<ul>");                 
                     for (let i = 0; i < data.holidays.length; i++) { 
                         const dateOne = moment(data.holidays[i].date, "YYYY-MM-DD").format("MMMM");                         
                         if (currentMonth === dateOne) {
@@ -743,7 +743,7 @@ function holidayWidget(onInit) {
                     let $widgetDivAction = $("<div>");
                     $widgetDivAction.addClass("card-action");
 
-                    let $widgetDivActionA = $("<a>");
+                    let $widgetDivActionA = $("<a>"); 
                     $widgetDivActionA.attr("href", "#widgetModal");
                     $widgetDivActionA.addClass("modal-trigger green-text")
                     $widgetDivActionA.text("More Info");
