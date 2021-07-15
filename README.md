@@ -3,7 +3,10 @@
 ## Description
 Have you ever found the beginning of a meeting to be awkward and silent? No More! With the Small Talk Generator, get access to everything happening around the world where your team is located. Want to talk about the weekend? Look at the weather for you and your team all in one place. Small Talk Generator will present a dashboard of widgets tailored to topics you and your team find interesting. So pull it up at the beginning of a meeting and take a break from "Zoom Fatigue"!
 
-### User Story
+## Usage
+You can access the app here: [https://avidrunner87.github.io/small-talk/](https://avidrunner87.github.io/small-talk/).
+
+## User Story
 **AS A(N)** team member<br>
 I **WANT** see what is going on in the cities where my team is located<br>
 **SO THAT** we can avoid the awkward silence at the beginning of a meeting and build a stronger team.
@@ -40,11 +43,20 @@ In addition to the _Project Requirements_ above:
 - Every group member should speak during the presentation.
 - There are no major disparities in the number of GitHub contributions between group members.
 
+### Licenses
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/avidrunner87/small-talk/blob/main/LICENSE.md)
 
-### Mock-up
+### Technologies
+![HTML](https://img.shields.io/static/v1?label=html&message=3.6%&color=red)
+![CSS](https://img.shields.io/static/v1?label=css&message=2.2%&color=purple)
+![JavaScript](https://img.shields.io/static/v1?label=javascript&message=94.2%&color=yellow)
+## Mock-up
 The following picture shows the website appearance and capabilities:
 
-![Website Mock-Up](./assets/images/website_mockup.gif)
+<img src="./assets/images/screenshots/mockup.gif" width="600"><br>
+<img src="./assets/images/screenshots/screenshot01.png" width="300">
+<img src="./assets/images/screenshots/screenshot02.png" width="300"><br>
+<img src="./assets/images/screenshots/screenshot03.png" width="300">
 
 ## Installation
 To fork this code to further improve the website, please follow these directions:
@@ -53,8 +65,6 @@ To fork this code to further improve the website, please follow these directions
 1. Clone the repository to your local computer.
 
 _This assumes that you have setup your own SSH keys to connect with Github._
-## Usage
-You can access the website [here](https://avidrunner87.github.io/small-talk/).
 
 ## References
 [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/HTML/Element)<br>
