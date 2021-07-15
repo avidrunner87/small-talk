@@ -43,10 +43,10 @@ In addition to the _Project Requirements_ above:
 - Every group member should speak during the presentation.
 - There are no major disparities in the number of GitHub contributions between group members.
 
-### Licenses
+## Licenses
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/avidrunner87/small-talk/blob/main/LICENSE.md)
 
-### Technologies
+## Technologies
 ![HTML](https://img.shields.io/static/v1?label=html&message=3.6%&color=red)
 ![CSS](https://img.shields.io/static/v1?label=css&message=2.2%&color=purple)
 ![JavaScript](https://img.shields.io/static/v1?label=javascript&message=94.2%&color=yellow)
